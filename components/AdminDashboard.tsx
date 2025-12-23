@@ -399,6 +399,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                     <input type="checkbox" onChange={selectAll} checked={selectedIds.length > 0 && selectedIds.length === getFilteredAdventures().length} className="w-4 h-4 rounded border-white/30 bg-white/5 checked:bg-cyan-500 cursor-pointer" />
                                                 </th>
                                                 <th onClick={() => handleSort('created_at')} className="p-6 cursor-pointer hover:text-white">Fecha</th>
+                                                <th onClick={() => handleSort('is_featured')} className="p-6 text-center cursor-pointer hover:text-white w-24">Destacado</th>
                                                 <th onClick={() => handleSort('topic')} className="p-6 cursor-pointer hover:text-white">Aventura</th>
                                                 <th className="p-6">Creador</th>
                                                 <th className="p-6 text-center">Datos</th>
@@ -415,6 +416,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                             <input type="checkbox" checked={selectedIds.includes(adv.id)} onChange={() => toggleSelect(adv.id)} className="w-4 h-4 rounded border-white/30 bg-white/5 checked:bg-cyan-500 cursor-pointer" />
                                                         </td>
                                                         <td className="p-6 font-mono text-xs text-white/30">{new Date(adv.created_at).toLocaleDateString()}</td>
+
+                                                        {/* FEATURED COLUMN */}
+                                                        <td className="p-6 text-center">
+                                                            <button
+                                                                onClick={() => toggleFeatured(adv.id, adv.is_featured || false)}
+                                                                className={`w-8 h-8 rounded-full ${adv.is_featured ? 'bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-110' : 'bg-white/5 text-white/20 hover:text-amber-400 hover:bg-white/10'} transition-all`}
+                                                                title={adv.is_featured ? "Quitar de destacados" : "Destacar"}
+                                                            >
+                                                                <i className="fa-solid fa-star text-xs"></i>
+                                                            </button>
+                                                        </td>
+
                                                         <td className="p-6">
                                                             <div className="font-bold text-white text-base">{adv.topic}</div>
                                                             <div className="flex flex-wrap gap-2 mt-1">
