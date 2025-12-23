@@ -197,8 +197,8 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
             {/* --- Mobile Featured FAB & Sheet --- */}
 
-            {/* FAB */}
-            <div className="md:hidden fixed bottom-6 right-6 z-40">
+            {/* FAB - Elevated to avoid footer overlap */}
+            <div className="md:hidden fixed bottom-24 right-4 z-40">
                 <button
                     onClick={() => setShowFeaturedSheet(true)}
                     className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 shadow-[0_0_20px_rgba(251,191,36,0.5)] flex items-center justify-center animate-bounce-slow hover:scale-110 transition-transform"
@@ -301,10 +301,10 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
             )}
 
             {/* --- Footer: Creado y desarrollado por --- */}
-            <div className="fixed bottom-2 right-2 z-50 flex flex-col items-end gap-0 opacity-30 hover:opacity-100 transition-opacity duration-300">
-                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white leading-none -mb-1">Creado y desarrollado por</span>
-                <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform">
-                    <img src={MAURO_BURGOS_LOGO} alt="Mauro Burgos" className="h-20 w-auto" />
+            <div className="fixed bottom-1 right-1 z-50 flex flex-col items-end gap-0 opacity-100 transition-opacity duration-300 pointer-events-none md:pointer-events-auto">
+                <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.2em] text-white leading-none -mb-1 opacity-50">Creado y desarrollado por</span>
+                <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform pointer-events-auto">
+                    <img src={MAURO_BURGOS_LOGO} alt="Mauro Burgos" className="h-10 md:h-20 w-auto drop-shadow-lg" />
                 </a>
             </div>
 
