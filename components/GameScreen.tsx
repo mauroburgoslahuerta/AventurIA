@@ -69,7 +69,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     handleNext,
     playSfx,
 
-    isCreatorMode = false
+    isCreatorMode = false,
+    isSharedAdventure = false
 }) => {
     const pageVariants = {
         initial: { opacity: 0, y: 20, scale: 0.98 },
@@ -100,7 +101,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         >
             <div className="flex justify-between items-center mb-6 bg-white/[0.03] backdrop-blur-3xl p-5 rounded-3xl border border-white/10 shrink-0 relative">
                 <div className="flex items-center z-10">
-                    {isCreatorMode && <button onClick={handleGoHome} className="flex items-center gap-3 bg-white/5 hover:bg-white hover:text-slate-900 px-6 py-2 rounded-2xl transition-all border border-white/10 font-black text-[10px] uppercase tracking-widest"><i className="fa-solid fa-house"></i> Inicio</button>}
+                    {!isSharedAdventure && <button onClick={handleGoHome} className="flex items-center gap-3 bg-white/5 hover:bg-white hover:text-slate-900 px-6 py-2 rounded-2xl transition-all border border-white/10 font-black text-[10px] uppercase tracking-widest"><i className="fa-solid fa-house"></i> Inicio</button>}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <span className="text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/80 px-4 py-1 rounded-full backdrop-blur-md border border-white/5 shadow-xl">{normalizedTopic}</span>
