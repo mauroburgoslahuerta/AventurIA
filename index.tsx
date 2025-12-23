@@ -309,15 +309,17 @@ const App = () => {
     const params = new URLSearchParams(window.location.search);
     let adventureId = params.get('id');
 
-    if (!adventureId) {
-      setIsSharing(true);
-      setLoadingMessage('Guardando tu aventura...');
-      try {
-        let thumbUrl = questions[0]?.imageData || '';
-        if (thumbUrl.startsWith('data:')) {
-          thumbUrl = await uploadToStorage(thumbUrl);
-        }
+    setLoadingMessage('Guardando tu aventura...');
+    setIsSharing(true);
 
+    try {
+      let thumbUrl = questions[0]?.imageData || '';
+      if (thumbUrl.startsWith('data:')) {
+        thumbUrl = await uploadToStorage(thumbUrl);
+      }
+
+      if (!adventureId) {
+        // --- CREATE NEW ADVENTURE ---
         const { data, error } = await supabase
           .from('adventures')
           .insert({
@@ -340,25 +342,48 @@ const App = () => {
           const newUrl = `${window.location.pathname}?id=${data.id}`;
           window.history.pushState({ path: newUrl }, '', newUrl);
         }
-      } catch (e) {
-        console.error("Save Error:", e);
-        showToast("❌ Error al guardar la aventura");
-        setIsSharing(false);
-        return;
-      }
-    }
+      } else {
+        // --- UPDATE EXISTING ADVENTURE (Fix for missing images) ---
+        // If we are the creator (checked by RLS usually, but good to check user existence),
+        // we update the questions to ensure all background-generated images are persisted.
+        if (user) {
+          const { error } = await supabase
+            .from('adventures')
+            .update({
+              questions: questions, // Save the latest questions with ALL images
+              thumbnail_url: thumbUrl // Update thumbnail if it changed (unlikely but safe)
+            })
+            .eq('id', adventureId)
+            // .eq('user_id', user.id) // RLS handles this, but safety first? No, let RLS handle permission.
+            ;
 
-    if (adventureId) {
-      const shareUrl = `${window.location.origin}/?id=${adventureId}`;
-      if (type === 'link') {
-        navigator.clipboard.writeText(shareUrl);
-        showToast('🔗 Enlace copiado al portapapeles');
-      } else if (type === 'whatsapp') {
-        window.open(`https://wa.me/?text=${encodeURIComponent(`¡Juega a mi aventura sobre ${config.topic}! ${shareUrl}`)}`, '_blank');
+          if (error) {
+            console.warn("Could not update adventure (probably not owner):", error);
+            // We don't throw here, because we still want to allow sharing the link 
+            // even if we couldn't update the source (e.g. sharing someone else's adventure).
+          } else {
+            console.log("✅ Adventure updated with latest images before share.");
+          }
+        }
       }
+
+      if (adventureId) {
+        const shareUrl = `${window.location.origin}/?id=${adventureId}`;
+        if (type === 'link') {
+          navigator.clipboard.writeText(shareUrl);
+          showToast('🔗 Enlace copiado al portapapeles');
+        } else if (type === 'whatsapp') {
+          window.open(`https://wa.me/?text=${encodeURIComponent(`¡Juega a mi aventura sobre ${config.topic}! ${shareUrl}`)}`, '_blank');
+        }
+      }
+
+    } catch (e) {
+      console.error("Save/Share Error:", e);
+      showToast("❌ Error al guardar/compartir");
+    } finally {
+      setShowShareMenu(false);
+      setIsSharing(false);
     }
-    setShowShareMenu(false);
-    setIsSharing(false);
   };
 
   const downloadHTML = () => {
