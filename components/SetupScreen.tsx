@@ -70,7 +70,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                     <div className="relative w-full flex flex-row items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
 
                         {/* Global Offset Wrapper */}
-                        <div className="flex flex-row items-center justify-center gap-[27px] translate-x-[-11px]">
+                        <div className="flex flex-row items-center justify-center gap-[36px] md:gap-[27px] translate-x-[-7px] md:translate-x-[-11px]">
                             {/* Brain Icon */}
                             <img src={AI_ENGINE_LOGO} className="h-16 md:h-[4.5rem] w-auto animate-float -mt-[18px] ml-[7px]" />
 
