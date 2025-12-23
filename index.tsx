@@ -534,6 +534,8 @@ const App = () => {
             handleInstallClick={handleInstallClick}
             setAppState={setAppState}
             featuredAdventures={featuredAdventures}
+            user={user}
+            setShowAuthOverlay={setShowAuthOverlay}
           />
         )}
 
@@ -603,6 +605,7 @@ const App = () => {
             setShowHint={setShowHint}
             handleNext={handleNext}
             playSfx={(type) => playSfx(type, sfxMuted)}
+            isSharedAdventure={isSharedAdventureRef.current}
           />
         )}
 
