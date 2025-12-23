@@ -71,14 +71,14 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                         {/* --- MOBILE HEADER (Vertical Stack) --- */}
                         <div className="md:hidden flex flex-col items-center gap-4 w-full">
-                            {/* Logo & Brain Row */}
-                            <div className="flex items-center justify-center gap-2">
-                                <img src={AI_ENGINE_LOGO} className="h-14 w-auto animate-float" />
-                                <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-10 w-auto object-contain" />
+                            {/* Logo & Brain Row (Restoring the "Lockup") */}
+                            <div className="flex items-center justify-center translate-x-3">
+                                <img src={AI_ENGINE_LOGO} className="h-20 w-auto animate-float z-10" />
+                                <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-32 w-auto object-contain -ml-12" />
                             </div>
 
                             {/* Subtitle */}
-                            <p className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] text-center leading-relaxed px-4 opacity-90">
+                            <p className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] text-center leading-relaxed px-4 opacity-90 -mt-6">
                                 Crea retos educativos interactivos en segundos
                             </p>
 
@@ -90,8 +90,8 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                     <span className="text-[7px] font-medium text-white/40 leading-none tracking-wider">V1.4</span>
                                 </div>
 
-                                {/* Install Button (Mobile) */}
-                                {deferredPrompt && (
+                                {/* Install Button (Mobile) - FORCED VISIBILITY FOR DEMO */}
+                                {(deferredPrompt || true) && (
                                     <button onClick={handleInstallClick} className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/20 flex items-center gap-2">
                                         <i className="fa-solid fa-download text-[9px]"></i>
                                         <span>Instalar</span>
