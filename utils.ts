@@ -88,15 +88,11 @@ export const recordGameScore = async (id: string, scoreVal: number, playerAlias?
     try {
         trackEvent('game_complete', 'Gameplay', 'Score', scoreVal);
 
-        // 0. Skip if Creator Mode (Editing/Testing) - OPTIONAL: User might want to record their own scores?
-        // Usually creators playing their own game shouldn't skew stats, but for testing "first vs best" it might be useful.
-        // Let's keep the block but maybe comment it out if user wants to test? 
-        // User asked for logic change, not this. I'll leave it as is (blocked for creator).
-        // 0. UPDATE: Allow Creator to save score for testing logic
-        // if (isCreator) {
-        //     console.log("Creator play - Score not saved.");
-        //     return;
-        // }
+        // 0. Skip if Creator Mode (Prevent Creator from appearing on leaderboard)
+        if (isCreator) {
+            console.log("Creator play - Score not saved on leaderboard.");
+            return;
+        }
 
         // 1. Update Aggregate Stats (Legacy RPC) - Keeps total plays count accurate
         const { error } = await supabase.rpc('record_adventure_score', { adventure_id: id, score_val: scoreVal });
