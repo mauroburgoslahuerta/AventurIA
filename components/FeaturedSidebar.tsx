@@ -78,9 +78,24 @@ export const FeaturedSidebar: React.FC<FeaturedSidebarProps> = ({
                                 <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
                                     <h4 className="text-xs font-bold text-white leading-tight truncate pr-2 group-hover:text-amber-400 transition-colors">{adv.topic}</h4>
                                     <span className="text-[9px] text-white/40 uppercase tracking-wider truncate w-full">{adv.audience}</span>
-                                    <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border ${diffColors} self-start mt-0.5`}>
+                                    <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border ${diffColors} self-start mt-0.5 inline-flex items-center gap-1`}>
                                         {diff === 'hard' ? 'Difícil' : diff === 'easy' ? 'Fácil' : 'Medio'}
                                     </span>
+                                    {/* TIMER BADGE */}
+                                    {(() => {
+                                        const time = adv.config?.timerSeconds ?? 0;
+                                        const timeConfig = {
+                                            0: { color: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10', label: '∞', icon: 'fa-infinity' },
+                                            30: { color: 'text-amber-400 border-amber-500/20 bg-amber-500/10', label: '30s', icon: 'fa-stopwatch' },
+                                            60: { color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10', label: '60s', icon: 'fa-clock' }
+                                        }[time] || { color: 'text-slate-400 border-slate-500/20 bg-slate-500/10', label: time + 's', icon: 'fa-clock' };
+
+                                        return (
+                                            <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border ${timeConfig.color} self-start mt-0.5 inline-flex items-center gap-1 ml-1`}>
+                                                <i className={`fa-solid ${timeConfig.icon} text-[6px]`}></i> {timeConfig.label}
+                                            </span>
+                                        );
+                                    })()}
                                 </div>
                             </button>
                         );

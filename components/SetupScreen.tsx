@@ -12,6 +12,8 @@ interface SetupScreenProps {
     handleInstallClick: () => void;
     setAppState: (state: any) => void;
     featuredAdventures: Adventure[];
+    user: any; // Using any to avoid Supabase type dependency issues, as it's just a check
+    setShowAuthOverlay: (show: boolean) => void;
 }
 
 export const SetupScreen: React.FC<SetupScreenProps> = ({
@@ -22,12 +24,24 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     deferredPrompt,
     handleInstallClick,
     setAppState,
-    featuredAdventures
+    featuredAdventures,
+    user,
+    setShowAuthOverlay
 }) => {
     const pageVariants = {
         initial: { opacity: 0, y: 20, scale: 0.98 },
         animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
         exit: { opacity: 0, scale: 0.98, transition: { duration: 0.2, ease: "easeIn" } }
+    };
+
+    const [showLoginNudge, setShowLoginNudge] = React.useState(false);
+
+    const handleGenerateClick = () => {
+        if (!user) {
+            setShowLoginNudge(true);
+        } else {
+            generateGame();
+        }
     };
 
     return (
@@ -170,7 +184,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                         </div>
                     )}
 
-                    <button onClick={generateGame} disabled={!config.topic || !config.audience} className="w-full mt-8 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-lg hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest disabled:opacity-20 flex items-center justify-center gap-4 group shadow-[0_0_20px_rgba(0,0,0,0.2)] hover:shadow-[0_0_40px_rgba(0,229,255,0.4)]">
+                    <button onClick={handleGenerateClick} disabled={!config.topic || !config.audience} className="w-full mt-8 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-lg hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest disabled:opacity-20 flex items-center justify-center gap-4 group shadow-[0_0_20px_rgba(0,0,0,0.2)] hover:shadow-[0_0_40px_rgba(0,229,255,0.4)]">
                         CREAR AVENTURA <i className="fa-solid fa-wand-magic-sparkles text-sm group-hover:rotate-12 transition-transform"></i>
                     </button>
 
@@ -200,6 +214,21 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                         <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
                                             {diff}
                                         </span>
+                                        {/* TIMER BADGE (Mobile) */}
+                                        {(() => {
+                                            const time = adv.config?.timerSeconds ?? 0;
+                                            const timeConfig = {
+                                                0: { color: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10', label: '∞', icon: 'fa-infinity' },
+                                                30: { color: 'text-amber-400 border-amber-500/20 bg-amber-500/10', label: '30s', icon: 'fa-stopwatch' },
+                                                60: { color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10', label: '60s', icon: 'fa-clock' }
+                                            }[time] || { color: 'text-slate-400 border-slate-500/20 bg-slate-500/10', label: time + 's', icon: 'fa-clock' };
+
+                                            return (
+                                                <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${timeConfig.color} flex items-center gap-1`}>
+                                                    <i className={`fa-solid ${timeConfig.icon} text-[6px]`}></i> {timeConfig.label}
+                                                </span>
+                                            );
+                                        })()}
                                         <span className="text-[9px] font-bold text-white/40 flex items-center gap-1">
                                             <i className="fa-solid fa-play text-[8px]"></i> {adv.play_count}
                                         </span>
@@ -222,6 +251,44 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                     <img src={MAURO_BURGOS_LOGO} alt="Mauro Burgos" className="h-20 w-auto" />
                 </a>
             </div>
+
+            {/* --- LOGIN NUDGE MODAL --- */}
+            {showLoginNudge && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-fade-in">
+                    <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
+                        <div className="flex flex-col items-center text-center gap-4">
+                            <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center mb-2">
+                                <i className="fa-solid fa-user-astronaut text-3xl text-cyan-400"></i>
+                            </div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-wide">Modo Invitado</h3>
+                            <p className="text-sm text-white/70 leading-relaxed font-medium">
+                                ¡Espera! Estás en modo invitado. Si te conectas podrás guardar esta aventura, ver quién la juega y sus puntuaciones.
+                            </p>
+
+                            <div className="flex flex-col gap-3 w-full mt-4">
+                                <button
+                                    onClick={() => {
+                                        setShowLoginNudge(false);
+                                        setShowAuthOverlay(true);
+                                    }}
+                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-[1.02]"
+                                >
+                                    Conectarse
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowLoginNudge(false);
+                                        generateGame();
+                                    }}
+                                    className="w-full py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
+                                >
+                                    Continuar sin guardar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 };
