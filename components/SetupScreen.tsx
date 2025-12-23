@@ -211,24 +211,24 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                             return (
                                 <div key={adv.id} className="snap-center shrink-0 w-64 bg-[#0f172a] border border-white/10 rounded-2xl p-4 flex flex-col gap-3 shadow-lg relative overflow-hidden group">
                                     <div className="flex justify-between items-start">
-                                        <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
-                                            {diff}
-                                        </span>
-                                        {/* TIMER BADGE (Mobile) */}
-                                        {(() => {
-                                            const time = adv.config?.timerSeconds ?? 0;
-                                            const timeConfig = {
-                                                0: { color: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10', label: '∞', icon: 'fa-infinity' },
-                                                30: { color: 'text-amber-400 border-amber-500/20 bg-amber-500/10', label: '30s', icon: 'fa-stopwatch' },
-                                                60: { color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10', label: '60s', icon: 'fa-clock' }
-                                            }[time] || { color: 'text-slate-400 border-slate-500/20 bg-slate-500/10', label: time + 's', icon: 'fa-clock' };
+                                        <div className="flex items-center gap-1">
+                                            <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
+                                                {diff}
+                                            </span>
+                                            {/* TIMER BADGE (Mobile) */}
+                                            {(() => {
+                                                const time = adv.config?.timerSeconds ?? 0;
+                                                const label = time === 0 ? '∞' : time + 's';
+                                                const icon = time === 0 ? 'fa-infinity' : 'fa-clock';
+                                                const neutralStyle = "text-slate-400 border-slate-500/20 bg-slate-500/10";
 
-                                            return (
-                                                <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${timeConfig.color} flex items-center gap-1`}>
-                                                    <i className={`fa-solid ${timeConfig.icon} text-[6px]`}></i> {timeConfig.label}
-                                                </span>
-                                            );
-                                        })()}
+                                                return (
+                                                    <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${neutralStyle} flex items-center gap-1`}>
+                                                        <i className={`fa-solid ${icon} text-[6px]`}></i> {label}
+                                                    </span>
+                                                );
+                                            })()}
+                                        </div>
                                         <span className="text-[9px] font-bold text-white/40 flex items-center gap-1">
                                             <i className="fa-solid fa-play text-[8px]"></i> {adv.play_count}
                                         </span>
