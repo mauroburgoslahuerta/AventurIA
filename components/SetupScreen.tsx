@@ -82,7 +82,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                     <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-40 md:h-60 w-auto object-contain -my-10 md:-my-[68px] -ml-[42px]" />
 
                                     {/* Badges Container */}
-                                    <div className="flex items-center gap-3 ml-[1px] relative top-[3px]">
+                                    <div className="flex items-center gap-2 md:gap-3 ml-[1px] relative top-[3px]">
                                         {/* Beta Badge - Tuner Trigger */}
                                         <div
 
@@ -95,8 +95,8 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                                         {/* Install Button */}
                                         {deferredPrompt && (
-                                            <button onClick={handleInstallClick} className="bg-transparent text-emerald-400/90 text-[10px] font-bold px-4 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-2 hover:border-emerald-500/40">
-                                                <i className="fa-solid fa-download text-[9px]"></i>
+                                            <button onClick={handleInstallClick} className="bg-transparent text-emerald-400/90 text-[8px] md:text-[10px] font-bold px-2 py-0.5 md:px-4 md:py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-1.5 md:gap-2 hover:border-emerald-500/40">
+                                                <i className="fa-solid fa-download text-[8px] md:text-[9px]"></i>
                                                 <span>Instalar</span>
                                             </button>
                                         )}
