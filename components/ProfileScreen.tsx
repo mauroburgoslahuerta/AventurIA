@@ -107,6 +107,26 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
         setParamLoading(false);
     };
 
+    const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!confirm("¿Borrar este registro? Desaparecerá del ranking.")) return;
+
+        // Optimistic UI update
+        setAdventureSessions(prev => prev.filter(s => s.id !== sessionId));
+
+        const { error } = await supabase
+            .from('game_sessions')
+            .delete()
+            .eq('id', sessionId);
+
+        if (error) {
+            alert("Error al borrar: " + error.message);
+            // Revert if error? For now, fetch again or leave it. 
+            // Simple approach: Reload stats
+            if (selectedAdventureId) handleViewStats(selectedAdventureId);
+        }
+    };
+
     const [modalSortConfig, setModalSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'score', direction: 'desc' });
 
     const handleModalSort = (key: string) => {
@@ -190,8 +210,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
                                                     const firstRaw = (s.first_score !== null && qCount > 0) ? Math.round((s.first_score / 100) * qCount) : null;
 
                                                     return (
-                                                        <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                            <td className="p-4">{s.player_alias || 'Anónimo'}</td>
+                                                        <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
+                                                            <td className="p-4 flex items-center gap-2">
+                                                                <button
+                                                                    onClick={(e) => handleDeleteSession(s.id, e)}
+                                                                    className="w-6 h-6 rounded bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all font-bold"
+                                                                    title="Borrar registro"
+                                                                >
+                                                                    <i className="fa-solid fa-xmark text-xs"></i>
+                                                                </button>
+                                                                {s.player_alias || 'Anónimo'}
+                                                            </td>
                                                             <td className="p-4 text-center text-cyan-400">{bestRaw}/{qCount} ({s.score}%)</td>
                                                             <td className="p-4 text-center text-white/40">{firstRaw !== null ? `${firstRaw}/${qCount} (${s.first_score}%)` : '-'}</td>
                                                             <td className="p-4 text-right font-mono text-[10px] text-white/30">
