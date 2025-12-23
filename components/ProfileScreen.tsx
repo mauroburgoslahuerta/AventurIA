@@ -107,6 +107,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
         setParamLoading(false);
     };
 
+    const handleQuickShare = (advId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/?id=${advId}`;
+        navigator.clipboard.writeText(shareUrl);
+        // Simple visual feedback since we don't have showToast prop passed here easily without refactoring parent.
+        // We can use alert or just rely on the button animation I'll add.
+        // Or better: Let's assume user wants feedback.
+        alert("🔗 ¡Enlace copiado! Compártelo donde quieras.");
+        playSfx('click');
+    };
+
     const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (!confirm("¿Borrar este registro? Desaparecerá del ranking.")) return;
@@ -312,6 +323,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
+                                            <button
+                                                onClick={(e) => handleQuickShare(adv.id, e)}
+                                                className="w-8 h-8 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400/60 hover:text-cyan-400 flex items-center justify-center transition-colors"
+                                                title="Copiar Enlace para Compartir"
+                                            >
+                                                <i className="fa-solid fa-share-nodes text-xs"></i>
+                                            </button>
                                             <button
                                                 onClick={() => handleDelete(adv.id)}
                                                 className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400/60 hover:text-red-400 flex items-center justify-center transition-colors"
