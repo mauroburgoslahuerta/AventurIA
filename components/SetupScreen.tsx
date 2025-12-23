@@ -93,13 +93,32 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                             <span className="text-[7px] font-medium text-white/40 leading-none tracking-wider group-hover:text-white/60">V1.4</span>
                                         </div>
 
-                                        {/* Install Button */}
-                                        {deferredPrompt && (
-                                            <button onClick={handleInstallClick} className="bg-transparent text-emerald-400/90 text-[8px] md:text-[10px] font-bold px-2 py-0.5 md:px-4 md:py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-1.5 md:gap-2 hover:border-emerald-500/40">
-                                                <i className="fa-solid fa-download text-[8px] md:text-[9px]"></i>
-                                                <span>Instalar</span>
-                                            </button>
-                                        )}
+                                        {/* Install Button (Smart State) */}
+                                        {(() => {
+                                            const isStandalone = typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches;
+
+                                            if (isStandalone) {
+                                                return (
+                                                    <div className="flex items-center gap-1.5 md:gap-2 px-2 py-0.5 md:px-4 md:py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 cursor-default">
+                                                        <i className="fa-solid fa-check text-emerald-400 text-[8px] md:text-[9px]"></i>
+                                                        <span className="text-emerald-400/90 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">En App</span>
+                                                    </div>
+                                                );
+                                            }
+
+                                            return (
+                                                <button
+                                                    onClick={deferredPrompt
+                                                        ? handleInstallClick
+                                                        : () => alert("ℹ️ Opción de Instalación:\n\n• Si ya la tienes instalada: ¡Búscala en tus apps!\n• Android: Usa el menú (⋮) y busca 'Instalar aplicación'.\n• iOS: Pulsa 'Compartir' y elige 'Añadir a Inicio'.")
+                                                    }
+                                                    className="bg-transparent text-emerald-400/90 text-[8px] md:text-[10px] font-bold px-2 py-0.5 md:px-4 md:py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-1.5 md:gap-2 hover:border-emerald-500/40"
+                                                >
+                                                    <i className="fa-solid fa-download text-[8px] md:text-[9px]"></i>
+                                                    <span>Instalar</span>
+                                                </button>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
 
