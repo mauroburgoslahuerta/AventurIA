@@ -72,13 +72,13 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                         {/* --- MOBILE HEADER (Vertical Stack) --- */}
                         <div className="md:hidden flex flex-col items-center gap-4 w-full">
                             {/* Logo & Brain Row (Restoring the "Lockup") */}
-                            <div className="flex items-center justify-center translate-x-3">
-                                <img src={AI_ENGINE_LOGO} className="h-20 w-auto animate-float z-10" />
-                                <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-32 w-auto object-contain -ml-12" />
+                            <div className="flex items-center justify-center translate-x-0 relative gap-3">
+                                <img src={AI_ENGINE_LOGO} className="h-24 w-auto animate-float z-10" />
+                                <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-52 w-auto object-contain z-20" />
                             </div>
 
                             {/* Subtitle */}
-                            <p className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] text-center leading-relaxed px-4 opacity-90 -mt-6">
+                            <p className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] text-center leading-relaxed px-4 opacity-90 mt-0 relative z-30">
                                 Crea retos educativos interactivos en segundos
                             </p>
 
