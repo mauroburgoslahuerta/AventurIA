@@ -197,16 +197,22 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
             {/* --- Mobile Featured FAB & Sheet --- */}
 
-            {/* FAB - Elevated to avoid footer overlap */}
-            <div className="md:hidden fixed bottom-24 right-4 z-40">
+            {/* FAB - Elevated to avoid footer overlap - Draggable */}
+            <motion.div
+                className="md:hidden fixed bottom-24 right-4 z-40 touch-none"
+                drag
+                dragMomentum={false}
+                dragElastic={0.1}
+                whileTap={{ cursor: "grabbing" }}
+            >
                 <button
                     onClick={() => setShowFeaturedSheet(true)}
-                    className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 shadow-[0_0_20px_rgba(251,191,36,0.5)] flex items-center justify-center animate-bounce-slow hover:scale-110 transition-transform"
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 shadow-[0_0_20px_rgba(251,191,36,0.5)] flex items-center justify-center animate-bounce-slow hover:scale-110 transition-transform pointer-events-auto"
                 >
                     <i className="fa-solid fa-star text-2xl"></i>
                     <div className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 border-2 border-[#0f172a] animate-pulse"></div>
                 </button>
-            </div>
+            </motion.div>
 
             {/* Bottom Sheet */}
             {showFeaturedSheet && (
