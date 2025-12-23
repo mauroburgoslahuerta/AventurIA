@@ -12,6 +12,7 @@ interface SetupScreenProps {
     handleInstallClick: () => void;
     setAppState: (state: any) => void;
     featuredAdventures: Adventure[];
+    launchAdventure: (adv: Adventure) => void;
     user: any; // Using any to avoid Supabase type dependency issues, as it's just a check
     setShowAuthOverlay: (show: boolean) => void;
 }
@@ -25,6 +26,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     handleInstallClick,
     setAppState,
     featuredAdventures,
+    launchAdventure,
     user,
     setShowAuthOverlay
 }) => {
@@ -35,6 +37,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     };
 
     const [showLoginNudge, setShowLoginNudge] = React.useState(false);
+    const [showFeaturedSheet, setShowFeaturedSheet] = React.useState(false);
 
     const handleGenerateClick = () => {
         if (!user) {
@@ -192,55 +195,108 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                 </div>
             </motion.div>
 
-            {/* --- Mobile Featured Strip --- */}
-            {featuredAdventures.length > 0 && (
-                <div className="md:hidden w-full max-w-xl px-6 mt-8 mb-20 z-10">
-                    <div className="flex items-center gap-2 mb-3 opacity-60">
-                        <i className="fa-solid fa-star text-amber-500 text-[10px]"></i>
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Destacados</h3>
-                    </div>
-                    <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar">
-                        {featuredAdventures.map((adv) => {
-                            const diff = adv.config.difficulty || 'medium';
-                            const diffColors = {
-                                easy: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
-                                medium: 'text-amber-400 border-amber-500/20 bg-amber-500/10',
-                                hard: 'text-rose-400 border-rose-500/20 bg-rose-500/10'
-                            }[diff] || 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10';
+            {/* --- Mobile Featured FAB & Sheet --- */}
 
-                            return (
-                                <div key={adv.id} className="snap-center shrink-0 w-64 bg-[#0f172a] border border-white/10 rounded-2xl p-4 flex flex-col gap-3 shadow-lg relative overflow-hidden group">
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex items-center gap-1">
-                                            <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
-                                                {diff}
-                                            </span>
-                                            {/* TIMER BADGE (Mobile) */}
-                                            {(() => {
-                                                const time = adv.config?.timerSeconds ?? 0;
-                                                const label = time === 0 ? '∞' : time + 's';
-                                                const icon = time === 0 ? 'fa-infinity' : 'fa-clock';
-                                                const neutralStyle = "text-slate-400 border-slate-500/20 bg-slate-500/10";
+            {/* FAB */}
+            <div className="md:hidden fixed bottom-6 right-6 z-40">
+                <button
+                    onClick={() => setShowFeaturedSheet(true)}
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 shadow-[0_0_20px_rgba(251,191,36,0.5)] flex items-center justify-center animate-bounce-slow hover:scale-110 transition-transform"
+                >
+                    <i className="fa-solid fa-star text-2xl"></i>
+                    <div className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 border-2 border-[#0f172a] animate-pulse"></div>
+                </button>
+            </div>
 
-                                                return (
-                                                    <span className={`px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border ${neutralStyle} flex items-center gap-1`}>
-                                                        <i className={`fa-solid ${icon} text-[6px]`}></i> {label}
-                                                    </span>
-                                                );
-                                            })()}
+            {/* Bottom Sheet */}
+            {showFeaturedSheet && (
+                <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+                    {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowFeaturedSheet(false)}
+                        className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
+                    />
+
+                    {/* Sheet Content */}
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        className="relative w-full bg-[#0f172a] border-t border-white/20 rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+                    >
+                        {/* Handle */}
+                        <div className="w-full flex justify-center pt-3 pb-1" onClick={() => setShowFeaturedSheet(false)}>
+                            <div className="w-12 h-1.5 rounded-full bg-white/20"></div>
+                        </div>
+
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-2">
+                                <i className="fa-solid fa-star text-amber-500 text-lg"></i>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-white">Aventuras Destacadas</h3>
+                            </div>
+                            <button onClick={() => setShowFeaturedSheet(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40">
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        {/* List */}
+                        <div className="overflow-y-auto p-4 space-y-3 pb-20">
+                            {featuredAdventures.map((adv) => {
+                                const diff = adv.config?.difficulty || 'medium';
+                                const diffColors = {
+                                    easy: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
+                                    medium: 'text-amber-400 border-amber-500/20 bg-amber-500/10',
+                                    hard: 'text-rose-400 border-rose-500/20 bg-rose-500/10'
+                                }[diff] || 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10';
+
+                                return (
+                                    <button
+                                        key={adv.id}
+                                        onClick={() => { launchAdventure(adv); setShowFeaturedSheet(false); }}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex gap-4 text-left active:scale-[0.98] transition-transform relative overflow-hidden group"
+                                    >
+                                        {/* Thumbnail (Ahora sí!) */}
+                                        <div className="w-20 h-20 rounded-lg bg-slate-800 shrink-0 overflow-hidden relative shadow-lg">
+                                            {adv.thumbnail_url ? (
+                                                <img src={adv.thumbnail_url} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-amber-500/20 to-purple-500/20"></div>
+                                            )}
                                         </div>
-                                        <span className="text-[9px] font-bold text-white/40 flex items-center gap-1">
-                                            <i className="fa-solid fa-play text-[8px]"></i> {adv.play_count}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-white text-sm leading-tight line-clamp-2">{adv.topic}</h4>
-                                        <p className="text-[10px] text-white/40 mt-1 uppercase tracking-wider">{adv.audience}</p>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+
+                                        <div className="flex-1 flex flex-col justify-center gap-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
+                                                    {diff}
+                                                </span>
+                                                {(() => {
+                                                    const time = adv.config?.timerSeconds ?? 0;
+                                                    const label = time === 0 ? '∞' : time + 's';
+                                                    const neutralStyle = "text-slate-400 border-slate-500/20 bg-slate-500/10";
+                                                    return (
+                                                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${neutralStyle} flex items-center gap-1`}>
+                                                            <i className={`fa-solid ${time === 0 ? 'fa-infinity' : 'fa-clock'} text-[6px]`}></i> {label}
+                                                        </span>
+                                                    );
+                                                })()}
+                                            </div>
+                                            <h4 className="font-bold text-white text-sm leading-tight line-clamp-2">{adv.topic}</h4>
+                                            <p className="text-[10px] text-white/40 uppercase tracking-wider truncate">{adv.audience}</p>
+                                        </div>
+
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20">
+                                            <i className="fa-solid fa-chevron-right text-xs"></i>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </motion.div>
                 </div>
             )}
 
