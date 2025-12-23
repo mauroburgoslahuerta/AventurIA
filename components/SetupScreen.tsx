@@ -352,8 +352,14 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
             {/* --- LOGIN NUDGE MODAL --- */}
             {showLoginNudge && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-fade-in">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
+                <div
+                    onClick={() => setShowLoginNudge(false)}
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-fade-in"
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[#0f172a] border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative"
+                    >
                         <div className="flex flex-col items-center text-center gap-4">
                             <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center mb-2">
                                 <i className="fa-solid fa-user-astronaut text-3xl text-cyan-400"></i>
