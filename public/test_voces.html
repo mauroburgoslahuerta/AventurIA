@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Voces - AventurIA</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #22d3ee;
+            border-bottom: 2px solid #22d3ee;
+            padding-bottom: 0.5rem;
+        }
+
+        .voice-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .voice-card:hover {
+            border-color: #22d3ee;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            background: #22d3ee;
+            color: #083344;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #67e8f9;
+        }
+
+        .name {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .lang {
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Elige tu Voz 🎙️</h1>
+    <p>Haz clic en "Probar" y escucha. Cuando te guste una, <strong>copia su nombre exacto</strong> y dímelo.</p>
+    <div id="voice-list">Cargando voces...</div>
+
+    <script>
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('es'));
+            const container = document.getElementById('voice-list');
+
+            if (voices.length === 0) {
+                container.innerHTML = "<p>Esperando a que el navegador cargue las voces (puede tardar unos segundos)...</p>";
+                return;
+            }
+
+            container.innerHTML = "";
+            voices.forEach(voice => {
+                const div = document.createElement('div');
+                div.className = 'voice-card';
+                div.innerHTML = `
+                    <div>
+                        <span class="name">${voice.name}</span>
+                        <span class="lang">${voice.lang}</span>
+                    </div>
+                    <button onclick="speak('${voice.name}')">Probar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function speak(voiceName) {
+            window.speechSynthesis.cancel();
+            const voices = window.speechSynthesis.getVoices();
+            const voice = voices.find(v => v.name === voiceName);
+            if (!voice) return;
+
+            const u = new SpeechSynthesisUtterance("Hola aventurero, ¿te gusta cómo sueno para leer las preguntas?");
+            u.voice = voice;
+            u.rate = 1.0;
+            window.speechSynthesis.speak(u);
+        }
+
+        // Browsers load voices asynchronously
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,16 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/api/$1"
+        },
+        {
+            "source": "/pollinations/(.*)",
+            "destination": "https://image.pollinations.ai/$1"
+        },
+        {
+            "source": "/((?!api|pollinations|.*\\.).*)",
+            "destination": "/index.html"
+        }
+    ]
+}
