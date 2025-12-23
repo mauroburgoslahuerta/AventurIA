@@ -535,6 +535,7 @@ const App = () => {
             handleInstallClick={handleInstallClick}
             setAppState={setAppState}
             featuredAdventures={featuredAdventures}
+            launchAdventure={launchAdventure}
             user={user}
             setShowAuthOverlay={setShowAuthOverlay}
           />
