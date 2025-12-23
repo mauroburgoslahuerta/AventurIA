@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence, useDragControls, PanInfo } from 'framer-motion';
 import { AI_ENGINE_LOGO, MAURO_BURGOS_LOGO, PORTFOLIO_URL } from '../constants';
 import { GameConfig, Adventure } from '../types';
 
@@ -38,6 +38,13 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
     const [showLoginNudge, setShowLoginNudge] = React.useState(false);
     const [showFeaturedSheet, setShowFeaturedSheet] = React.useState(false);
+    const dragControls = useDragControls();
+
+    const onDragEnd = (event: any, info: PanInfo) => {
+        if (info.offset.y > 100 || info.velocity.y > 500) {
+            setShowFeaturedSheet(false);
+        }
+    };
 
     const handleGenerateClick = () => {
         if (!user) {
@@ -50,6 +57,14 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     return (
         <>
             <motion.div key="setup" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-xl flex flex-col z-10">
+                {/* ... existing content ... */}
+                {/* Note: I need to be careful not to replace the whole file content here as I am targeting a partial block, but the instruction implies logic changes. 
+                   Actually, I need to insert the `dragControls` logic inside the component body, which I can do by targeting the top of the component as I did above.
+                   But wait, I need to REPLACE the sheet rendering block too.
+                   Let's split this into two edits if needed, or one big one if contiguous. 
+                   The `showFeaturedSheet` state and `handleGenerateClick` are close. I can insert `dragControls` there.
+                */}
+
                 <div className="glass-card overflow-hidden shadow-3xl flex flex-col bg-[#0f172a]/60 border border-white/5 px-8 pb-8 pt-4">
                     {/* Header Container */}
                     <div className="relative w-full flex flex-row items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
@@ -64,7 +79,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                                 {/* Row: Logo + Badges */}
                                 <div className="flex items-center gap-[7px]">
-                                    <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-40 md:h-60 w-auto object-contain -my-10 md:-my-[68px] -ml-[42px]" />
+                                    <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-28 md:h-60 w-auto object-contain -my-10 md:-my-[68px] -ml-[30px] md:-ml-[42px]" />
 
                                     {/* Badges Container */}
                                     <div className="flex items-center gap-3 ml-[1px] relative top-[3px]">
@@ -80,9 +95,9 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                                         {/* Install Button */}
                                         {deferredPrompt && (
-                                            <button onClick={handleInstallClick} className="bg-transparent text-emerald-400/90 text-[10px] font-bold px-4 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-2 hover:border-emerald-500/40">
+                                            <button onClick={handleInstallClick} className="bg-transparent text-emerald-400/90 text-[10px] font-bold px-3 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-2 hover:border-emerald-500/40">
                                                 <i className="fa-solid fa-download text-[9px]"></i>
-                                                <span>Instalar</span>
+                                                <span className="hidden md:inline">Instalar</span>
                                             </button>
                                         )}
                                     </div>
@@ -215,96 +230,98 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
             </motion.div>
 
             {/* Bottom Sheet */}
-            {showFeaturedSheet && (
-                <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setShowFeaturedSheet(false)}
-                        className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
-                    />
+            <AnimatePresence>
+                {showFeaturedSheet && (
+                    <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowFeaturedSheet(false)}
+                            className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
+                        />
 
-                    {/* Sheet Content */}
-                    <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative w-full bg-[#0f172a] border-t border-white/20 rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
-                    >
-                        {/* Handle */}
-                        <div className="w-full flex justify-center pt-3 pb-1" onClick={() => setShowFeaturedSheet(false)}>
-                            <div className="w-12 h-1.5 rounded-full bg-white/20"></div>
-                        </div>
-
-                        {/* Header */}
-                        <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
-                            <div className="flex items-center gap-2">
-                                <i className="fa-solid fa-star text-amber-500 text-lg"></i>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-white">Aventuras Destacadas</h3>
+                        {/* Sheet Content */}
+                        <motion.div
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="relative w-full bg-[#0f172a] border-t border-white/20 rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+                        >
+                            {/* Handle */}
+                            <div className="w-full flex justify-center pt-3 pb-1" onClick={() => setShowFeaturedSheet(false)}>
+                                <div className="w-12 h-1.5 rounded-full bg-white/20"></div>
                             </div>
-                            <button onClick={() => setShowFeaturedSheet(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40">
-                                <i className="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
 
-                        {/* List */}
-                        <div className="overflow-y-auto p-4 space-y-3 pb-20">
-                            {featuredAdventures.map((adv) => {
-                                const diff = adv.config?.difficulty || 'medium';
-                                const diffColors = {
-                                    easy: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
-                                    medium: 'text-amber-400 border-amber-500/20 bg-amber-500/10',
-                                    hard: 'text-rose-400 border-rose-500/20 bg-rose-500/10'
-                                }[diff] || 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10';
+                            {/* Header */}
+                            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+                                <div className="flex items-center gap-2">
+                                    <i className="fa-solid fa-star text-amber-500 text-lg"></i>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-white">Aventuras Destacadas</h3>
+                                </div>
+                                <button onClick={() => setShowFeaturedSheet(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40">
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
 
-                                return (
-                                    <button
-                                        key={adv.id}
-                                        onClick={() => { launchAdventure(adv); setShowFeaturedSheet(false); }}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex gap-4 text-left active:scale-[0.98] transition-transform relative overflow-hidden group"
-                                    >
-                                        {/* Thumbnail (Ahora sí!) */}
-                                        <div className="w-20 h-20 rounded-lg bg-slate-800 shrink-0 overflow-hidden relative shadow-lg">
-                                            {adv.thumbnail_url ? (
-                                                <img src={adv.thumbnail_url} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" />
-                                            ) : (
-                                                <div className="w-full h-full bg-gradient-to-br from-amber-500/20 to-purple-500/20"></div>
-                                            )}
-                                        </div>
+                            {/* List */}
+                            <div className="overflow-y-auto p-4 space-y-3 pb-20">
+                                {featuredAdventures.map((adv) => {
+                                    const diff = adv.config?.difficulty || 'medium';
+                                    const diffColors = {
+                                        easy: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
+                                        medium: 'text-amber-400 border-amber-500/20 bg-amber-500/10',
+                                        hard: 'text-rose-400 border-rose-500/20 bg-rose-500/10'
+                                    }[diff] || 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10';
 
-                                        <div className="flex-1 flex flex-col justify-center gap-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
-                                                    {diff}
-                                                </span>
-                                                {(() => {
-                                                    const time = adv.config?.timerSeconds ?? 0;
-                                                    const label = time === 0 ? '∞' : time + 's';
-                                                    const neutralStyle = "text-slate-400 border-slate-500/20 bg-slate-500/10";
-                                                    return (
-                                                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${neutralStyle} flex items-center gap-1`}>
-                                                            <i className={`fa-solid ${time === 0 ? 'fa-infinity' : 'fa-clock'} text-[6px]`}></i> {label}
-                                                        </span>
-                                                    );
-                                                })()}
+                                    return (
+                                        <button
+                                            key={adv.id}
+                                            onClick={() => { launchAdventure(adv); setShowFeaturedSheet(false); }}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex gap-4 text-left active:scale-[0.98] transition-transform relative overflow-hidden group"
+                                        >
+                                            {/* Thumbnail (Ahora sí!) */}
+                                            <div className="w-20 h-20 rounded-lg bg-slate-800 shrink-0 overflow-hidden relative shadow-lg">
+                                                {adv.thumbnail_url ? (
+                                                    <img src={adv.thumbnail_url} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gradient-to-br from-amber-500/20 to-purple-500/20"></div>
+                                                )}
                                             </div>
-                                            <h4 className="font-bold text-white text-sm leading-tight line-clamp-2">{adv.topic}</h4>
-                                            <p className="text-[10px] text-white/40 uppercase tracking-wider truncate">{adv.audience}</p>
-                                        </div>
 
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20">
-                                            <i className="fa-solid fa-chevron-right text-xs"></i>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </motion.div>
-                </div>
-            )}
+                                            <div className="flex-1 flex flex-col justify-center gap-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${diffColors}`}>
+                                                        {diff}
+                                                    </span>
+                                                    {(() => {
+                                                        const time = adv.config?.timerSeconds ?? 0;
+                                                        const label = time === 0 ? '∞' : time + 's';
+                                                        const neutralStyle = "text-slate-400 border-slate-500/20 bg-slate-500/10";
+                                                        return (
+                                                            <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${neutralStyle} flex items-center gap-1`}>
+                                                                <i className={`fa-solid ${time === 0 ? 'fa-infinity' : 'fa-clock'} text-[6px]`}></i> {label}
+                                                            </span>
+                                                        );
+                                                    })()}
+                                                </div>
+                                                <h4 className="font-bold text-white text-sm leading-tight line-clamp-2">{adv.topic}</h4>
+                                                <p className="text-[10px] text-white/40 uppercase tracking-wider truncate">{adv.audience}</p>
+                                            </div>
+
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20">
+                                                <i className="fa-solid fa-chevron-right text-xs"></i>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* --- Footer: Creado y desarrollado por --- */}
             <div className="fixed bottom-1 right-1 z-50 flex flex-col items-end gap-0 opacity-100 transition-opacity duration-300 pointer-events-none md:pointer-events-auto">
