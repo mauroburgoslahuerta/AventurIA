@@ -67,28 +67,56 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                 <div className="glass-card overflow-hidden shadow-3xl flex flex-col bg-[#0f172a]/60 border border-white/5 px-8 pb-8 pt-4">
                     {/* Header Container */}
-                    <div className="relative w-full flex flex-row items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
+                    <div className="relative w-full flex flex-col items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
 
-                        {/* Global Offset Wrapper */}
-                        <div className="flex flex-row items-center justify-center gap-[27px] translate-x-[-11px]">
+                        {/* --- MOBILE HEADER (Vertical Stack) --- */}
+                        <div className="md:hidden flex flex-col items-center gap-4 w-full">
+                            {/* Logo & Brain Row */}
+                            <div className="flex items-center justify-center gap-2">
+                                <img src={AI_ENGINE_LOGO} className="h-14 w-auto animate-float" />
+                                <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-10 w-auto object-contain" />
+                            </div>
+
+                            {/* Subtitle */}
+                            <p className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] text-center leading-relaxed px-4 opacity-90">
+                                Crea retos educativos interactivos en segundos
+                            </p>
+
+                            {/* Badges Row */}
+                            <div className="flex items-center gap-3">
+                                {/* Beta Badge */}
+                                <div className="flex flex-col items-center justify-center border border-white/10 bg-white/5 rounded px-2 py-0.5">
+                                    <span className="text-[7px] font-bold text-cyan-400/80 leading-none tracking-widest">BETA</span>
+                                    <span className="text-[7px] font-medium text-white/40 leading-none tracking-wider">V1.4</span>
+                                </div>
+
+                                {/* Install Button (Mobile) */}
+                                {deferredPrompt && (
+                                    <button onClick={handleInstallClick} className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/20 flex items-center gap-2">
+                                        <i className="fa-solid fa-download text-[9px]"></i>
+                                        <span>Instalar</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+
+                        {/* --- DESKTOP HEADER (Original Offset Layout) --- */}
+                        <div className="hidden md:flex flex-row items-center justify-center gap-[27px] translate-x-[-11px]">
                             {/* Brain Icon */}
-                            <img src={AI_ENGINE_LOGO} className="h-16 md:h-[4.5rem] w-auto animate-float -mt-[18px] ml-[7px]" />
+                            <img src={AI_ENGINE_LOGO} className="h-[4.5rem] w-auto animate-float -mt-[18px] ml-[7px]" />
 
                             {/* Text Group */}
                             <div className="flex flex-col items-start justify-center z-10 -space-y-4">
 
                                 {/* Row: Logo + Badges */}
                                 <div className="flex items-center gap-[7px]">
-                                    <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-28 md:h-60 w-auto object-contain -my-10 md:-my-[68px] -ml-[30px] md:-ml-[42px]" />
+                                    <img src="/aventuria_logo_text.png" alt="AventurIA" className="h-60 w-auto object-contain -my-[68px] -ml-[42px]" />
 
                                     {/* Badges Container */}
                                     <div className="flex items-center gap-3 ml-[1px] relative top-[3px]">
-                                        {/* Beta Badge - Tuner Trigger */}
-                                        <div
-
-                                            className="flex flex-col items-center justify-center border border-white/10 bg-white/5 rounded px-2 py-0.5 hover:bg-white/10 transition-colors cursor-default group transform scale-90 origin-left"
-
-                                        >
+                                        {/* Beta Badge */}
+                                        <div className="flex flex-col items-center justify-center border border-white/10 bg-white/5 rounded px-2 py-0.5 hover:bg-white/10 transition-colors cursor-default group transform scale-90 origin-left">
                                             <span className="text-[7px] font-bold text-cyan-400/80 leading-none tracking-widest group-hover:text-cyan-300">BETA</span>
                                             <span className="text-[7px] font-medium text-white/40 leading-none tracking-wider group-hover:text-white/60">V1.4</span>
                                         </div>
@@ -97,14 +125,14 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                         {deferredPrompt && (
                                             <button onClick={handleInstallClick} className="bg-transparent text-emerald-400/90 text-[10px] font-bold px-3 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-300 transition-all flex items-center gap-2 hover:border-emerald-500/40">
                                                 <i className="fa-solid fa-download text-[9px]"></i>
-                                                <span className="hidden md:inline">Instalar</span>
+                                                <span>Instalar</span>
                                             </button>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Subtitle */}
-                                <p className="text-[10px] md:text-xs text-cyan-400 font-bold tracking-[0.2em] relative z-10 opacity-80 ml-[-31px]">Crea retos educativos interactivos en segundos</p>
+                                <p className="text-xs text-cyan-400 font-bold tracking-[0.2em] relative z-10 opacity-80 current-desktop-subtitle">Crea retos educativos interactivos en segundos</p>
                             </div>
                         </div>
                     </div>
