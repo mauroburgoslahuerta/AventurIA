@@ -262,7 +262,8 @@ const App = () => {
               setQuestions(data.questions);
               setNormalizedTopic(data.topic);
               setNormalizedAudience(data.audience);
-              setConfig(data.config);
+              // Ensure config has the topic/audience from the DB column, just in case JSON is missing it
+              setConfig({ ...data.config, topic: data.topic, audience: data.audience });
               setTimeout(() => setAppState('start_screen'), 500);
               showToast("✨ Aventura compartida cargada");
               apiIncrementPlay(adventureId);
