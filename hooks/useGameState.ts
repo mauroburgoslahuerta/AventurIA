@@ -149,6 +149,7 @@ export const useGameState = (
         setFeedback('none');
         setSelectedOption(null);
         setShowHint(false);
+        setTimer(config.timerSeconds); // Reset Timer logic here
         if (currentQIndex < questions.length - 1) {
             setCurrentQIndex(v => v + 1);
         } else {
