@@ -15,6 +15,7 @@ import { FeaturedSidebar } from './components/FeaturedSidebar';
 import { AudioControls } from './components/AudioControls';
 import { CustomConfetti } from './components/CustomConfetti';
 import { DownloadPopup } from './components/DownloadPopup';
+import { InfoModal } from './components/InfoModal';
 
 // Hooks
 import { useGameState } from './hooks/useGameState';
@@ -106,6 +107,7 @@ const App = () => {
 
   // --- Local UI State (Toasts, Popups) ---
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [showDownloadPopup, setShowDownloadPopup] = useState(false);
   const [flavorText, setFlavorText] = useState(LOADING_SUBTITLES[0]);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -494,6 +496,10 @@ const App = () => {
     <div className="min-h-screen bg-[#0f172a] text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative">
       {showConfetti && <CustomConfetti />}
 
+      {showInfoModal && (
+        <InfoModal onClose={() => setShowInfoModal(false)} />
+      )}
+
       <AudioControls
         showAudioMenu={showAudioMenu}
         setShowAudioMenu={setShowAudioMenu}
@@ -685,6 +691,14 @@ const App = () => {
 
       {appState === 'setup' && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+          <button
+            onClick={() => { playSfx('click', sfxMuted); setShowInfoModal(true); }}
+            className="w-10 h-10 rounded-full bg-[#0f172a]/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-xl"
+            title="Sobre AventurIA"
+          >
+            <i className="fa-solid fa-circle-info text-sm"></i>
+          </button>
+
           {user ? (
             <div className="flex items-center gap-3 bg-[#0f172a]/60 backdrop-blur-md border border-white/10 rounded-full pl-2 pr-1 py-1 shadow-xl">
               <button
