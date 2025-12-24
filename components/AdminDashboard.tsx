@@ -124,13 +124,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const handleBulkDelete = async () => {
         if (!selectedIds.length) return;
         if (!confirm(`¿ESTÁS SEGURO? Vas a eliminar ${selectedIds.length} aventuras permanentemente.`)) return;
-        const { error } = await supabase.from('adventures').delete().in('id', selectedIds);
-        if (!error) {
-            alert(`${selectedIds.length} aventuras eliminadas.`);
+
+        // Optimización: Borrado secuencial para evitar timeouts en DB
+        let deletedCount = 0;
+        const idsToDelete = [...selectedIds];
+
+        for (const id of idsToDelete) {
+            const { error } = await supabase.from('adventures').delete().eq('id', id);
+            if (!error) {
+                deletedCount++;
+            } else {
+                console.error(`Error borrando aventura ${id}:`, error);
+            }
+        }
+
+        if (deletedCount > 0) {
+            alert(`${deletedCount} de ${idsToDelete.length} aventuras eliminadas.`);
             setSelectedIds([]);
-            window.location.reload();
+            window.location.reload(); // Recargar para limpiar la vista
         } else {
-            alert("Error: " + error.message);
+            alert("No se pudo eliminar ninguna aventura. Revisa la consola o los permisos.");
         }
     };
 
