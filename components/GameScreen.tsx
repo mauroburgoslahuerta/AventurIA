@@ -11,6 +11,7 @@ interface GameScreenProps {
     timer: number;
     streak: number;
     correctCount: number;
+    score: number;
     questions: Question[];
     currentQIndex: number;
     isImageReady: boolean;
@@ -46,6 +47,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     timer,
     streak,
     correctCount,
+    score,
     questions,
     currentQIndex,
     isImageReady,
@@ -119,7 +121,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                         <span className="font-black text-xs text-orange-500">{streak}</span>
                     </div>
 
-                    <div className="bg-cyan-500/10 border border-cyan-500/30 px-6 py-3 rounded-2xl font-black text-cyan-400 text-xs tracking-widest">{correctCount}/{questions.length}</div>
+                    <div className="bg-cyan-500/10 border border-cyan-500/30 px-6 py-3 rounded-2xl font-black text-cyan-400 text-xs tracking-widest">{score}/{questions.length}</div>
                 </div>
             </div>
 

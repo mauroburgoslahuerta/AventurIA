@@ -142,7 +142,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                     {/* LEFT COLUMN: RESULT CARD (Main Focus - 2/3) */}
                     <div className="w-full md:w-2/3 glass-card p-8 text-center border border-white/10 flex flex-col items-center">
                         <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-6 text-cyan-500">Misión Completada</span>
-                        <span className="text-8xl font-black mb-6">{correctCount}/{questionCount}</span>
+                        <span className="text-8xl font-black mb-6">{score}/{questionCount}</span>
                         {(() => {
                             const r = getRank(score, questionCount);
                             return (
@@ -160,8 +160,8 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                                 <i className="fa-solid fa-house mr-2"></i> Menú Principal
                             </button>
                             <div className="relative w-full">
-                                <button onClick={() => { playSfx('click'); setShowShareMenu(!showShareMenu); }} className="w-full bg-white/5 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10 flex items-center justify-center gap-2">
-                                    <i className="fa-solid fa-share-nodes"></i> Compartir / Descargar
+                                <button onClick={() => { playSfx('click'); setShowShareMenu(!showShareMenu); }} className="w-full bg-white/5 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10">
+                                    <i className="fa-solid fa-share-nodes mr-2"></i> Compartir / Descargar
                                 </button>
                                 {showShareMenu && (
                                     <div className="absolute bottom-full left-0 w-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl overflow-hidden shadow-3xl animate-fade-in z-50 flex flex-col">
