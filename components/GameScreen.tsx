@@ -149,7 +149,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                         </div>
                     )}
                     {feedback !== 'none' && !isEditing && (
-                        <div className="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-3xl px-6 py-8 md:p-10 flex flex-col items-center text-center z-50 animate-fade-in overflow-hidden">
+                        <div className="fixed inset-0 z-[100] md:absolute md:inset-0 md:z-50 bg-[#0f172a]/95 backdrop-blur-3xl px-6 py-8 md:p-10 flex flex-col items-center text-center animate-fade-in overflow-hidden">
                             <div className="flex-1 w-full overflow-y-auto custom-scrollbar min-h-0 px-2">
                                 <div className="min-h-full flex flex-col justify-center items-center py-4 md:py-8">
                                     <span className={`shrink-0 text-[10px] font-black uppercase tracking-[0.5em] mb-6 ${feedback === 'correct' ? 'text-emerald-400' : 'text-red-400'}`}>
