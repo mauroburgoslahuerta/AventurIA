@@ -123,7 +123,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                     {isCreatorMode && <button onClick={handleGoHome} className="flex items-center gap-3 bg-white/5 hover:bg-white hover:text-slate-900 px-6 py-2 rounded-2xl transition-all border border-white/10 font-black text-[10px] uppercase tracking-widest"><i className="fa-solid fa-house"></i> Inicio</button>}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <span className="text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/80 px-4 py-1 rounded-full backdrop-blur-md border border-white/5 shadow-xl">{normalizedTopic}</span>
+                    <span className="hidden md:block text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/80 px-4 py-1 rounded-full backdrop-blur-md border border-white/5 shadow-xl">{normalizedTopic}</span>
                 </div>
 
                 <div className="flex items-center gap-4 z-10">
@@ -155,13 +155,15 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                             )
                         })()}
                         <div className="flex flex-col gap-3 w-full max-w-sm"> {/* Restricted width for buttons */}
-                            <button onClick={() => { playSfx('click'); resetGameState(); setAppState('start_screen'); }} className="w-full bg-cyan-500 text-slate-900 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-cyan-400 transition-all">Repetir Reto</button>
+                            <button onClick={() => { playSfx('click'); resetGameState(); setAppState('start_screen'); }} className="w-full bg-cyan-500 text-slate-900 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-cyan-400 transition-all relative flex items-center justify-center">
+                                <i className="fa-solid fa-gamepad absolute left-6"></i> Repetir Reto
+                            </button>
                             <button onClick={() => { playSfx('click'); handleGoHome(); }} className="w-full bg-white/5 text-white/60 hover:text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 hover:border-white/20 relative flex items-center justify-center">
                                 <i className="fa-solid fa-house absolute left-6"></i> Menú Principal
                             </button>
                             <div className="relative w-full">
                                 <button onClick={() => { playSfx('click'); setShowShareMenu(!showShareMenu); }} className="w-full bg-white/5 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10 relative flex items-center justify-center">
-                                    <i className="fa-solid fa-share-nodes absolute left-6"></i> Compartir / Descargar
+                                    <i className="fa-solid fa-share-nodes absolute left-6"></i> Compartir
                                 </button>
                                 {showShareMenu && (
                                     <div className="absolute bottom-full left-0 w-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl overflow-hidden shadow-3xl animate-fade-in z-50 flex flex-col">
@@ -272,23 +274,6 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                     </div>
                 </div>
             </div>
-
-            {/* --- LOADING OVERLAY (Refined & Subtle) --- */}
-            {isSharing && (
-                <div className="fixed inset-0 z-[100] bg-[#0f172a]/90 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in cursor-wait">
-                    <div className="bg-[#0f172a] border border-white/10 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 max-w-[260px] w-full relative overflow-hidden">
-                        {/* Shimmer / Glow Effect */}
-                        <div className="absolute inset-0 bg-cyan-500/5"></div>
-
-                        <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-cyan-400 animate-spin z-10"></div>
-
-                        <div className="space-y-1 text-center z-10">
-                            <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Guardando</h3>
-                            <p className="text-[10px] text-white/40 font-mono">Generando enlace...</p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </motion.div>
     );
 };
