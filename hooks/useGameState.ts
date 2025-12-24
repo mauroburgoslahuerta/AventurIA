@@ -177,7 +177,10 @@ export const useGameState = (
         if (isCorrect) {
             triggerHaptic(50);
             playSfx('correct', sfxMuted);
-            setScore(s => s + 1);
+
+            // Score Logic: 1 point normal, 0.5 if hint used
+            setScore(s => s + (showHint ? 0.5 : 1));
+
             setStreak(s => s + 1);
             setCorrectCount(c => c + 1);
             setFeedback('correct');
