@@ -1,16 +1,18 @@
 {
     "short_name": "AventurIA",
     "name": "AventurIA",
-    {
-        "src": "og-image.png",
-        "sizes": "192x192",
-        "type": "image/png"
-    },
-    {
-        "src": "og-image.png",
-        "sizes": "512x512",
-        "type": "image/png"
-    }
+    "icons": [
+        {
+            "src": "og-image.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "og-image.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
     "start_url": ".",
     "display": "standalone",
     "theme_color": "#0f172a",
