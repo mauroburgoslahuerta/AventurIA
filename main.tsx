@@ -616,6 +616,7 @@ const App = () => {
             timer={timer}
             streak={streak}
             correctCount={correctCount}
+            score={score}
             questions={questions}
             currentQIndex={currentQIndex}
             isImageReady={isImageReady}
