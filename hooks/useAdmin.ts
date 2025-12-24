@@ -16,7 +16,7 @@ export const useAdmin = () => {
         const loadFeatured = async () => {
             const { data } = await supabase
                 .from('adventures')
-                .select('id, topic, audience, config, play_count, thumbnail_url, questions') // Adding questions as sometimes used in launch
+                .select('id, topic, audience, config, play_count, thumbnail_url') // Optimized: Lazy load questions on play
                 .eq('is_featured', true)
                 .order('created_at', { ascending: false })
                 .limit(10);
