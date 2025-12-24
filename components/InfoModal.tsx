@@ -30,7 +30,6 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                         </div>
                         <div>
                             <h2 className="text-xl font-black text-white uppercase tracking-wider">Sobre AventurIA</h2>
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Descubre lo invisible</p>
                         </div>
                     </div>
                     <button
@@ -48,8 +47,8 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${activeTab === tab.id
-                                    ? 'bg-cyan-500 text-slate-900 shadow-lg shadow-cyan-500/20'
-                                    : 'bg-transparent text-slate-400 hover:bg-white/5 hover:text-white'
+                                ? 'bg-cyan-500 text-slate-900 shadow-lg shadow-cyan-500/20'
+                                : 'bg-transparent text-slate-400 hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <i className={`fa-solid ${tab.icon}`}></i>
@@ -71,23 +70,19 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                             >
                                 <div className="space-y-2">
                                     <h3 className="text-lg font-bold text-cyan-400 flex items-center gap-2">
-                                        <i className="fa-solid fa-pen-to-square"></i> Control Total
+                                        <i className="fa-solid fa-pen-to-square"></i> Control de Edición
                                     </h3>
                                     <p className="text-sm text-slate-300 leading-relaxed text-justify">
-                                        No eres dependiente de la IA. Tú tienes la última palabra.
-                                        Puedes <strong>editar cualquier pregunta, respuesta o explicación</strong> al instante.
-                                        Incluso puedes cambiar la imagen generada si no te convence, modificando su descripción visual.
+                                        El usuario mantiene el control absoluto sobre el contenido. Es posible editar preguntas, respuestas y explicaciones en tiempo real, así como modificar los parámetros de generación de imágenes si el resultado no es el esperado.
                                     </p>
                                 </div>
 
                                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
                                     <h3 className="text-base font-bold text-amber-400 flex items-center gap-2">
-                                        <i className="fa-solid fa-hand-holding-heart"></i> Enfoque Constructivo
+                                        <i className="fa-solid fa-hand-holding-heart"></i> Reformulación Pedagógica
                                     </h3>
                                     <p className="text-xs text-slate-300 leading-relaxed text-justify">
-                                        No bloqueamos contenido "complicado" (violencia, insultos, temas tabú).
-                                        En su lugar, nuestra IA lo <strong>reformula</strong> hacia un enfoque estrictamente educativo.
-                                        Transformamos la intención negativa en una lección constructiva.
+                                        El sistema no se limita a bloquear temas sensibles, sino que los recontextualiza. Los conceptos complejos o inadecuados son reformulados automáticamente por la IA para abordarlos desde una perspectiva estrictamente pedagógica.
                                     </p>
                                 </div>
                             </motion.div>
@@ -103,21 +98,20 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                             >
                                 <div className="space-y-2">
                                     <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                        <i className="fa-solid fa-brain"></i> Pedagogía Invisible
+                                        <i className="fa-solid fa-users-viewfinder"></i> Adaptación de Audiencia
                                     </h3>
-                                    <p className="text-sm text-slate-300 leading-relaxed">
-                                        No son preguntas aleatorias. Usamos la <strong>Taxonomía de Bloom</strong> para ajustar
-                                        la complejidad cognitiva según la dificultad que elijas (Recordar, Analizar, Crear).
+                                    <p className="text-sm text-slate-300 leading-relaxed text-justify">
+                                        El contenido se ajusta automáticamente al perfil definido. Si se especifica una etapa educativa (ej: '3º Primaria'), el sistema adapta el vocabulario y la profundidad académica para alinearse con el nivel curricular correspondiente.
                                     </p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                        <i className="fa-solid fa-image"></i> Resiliencia Visual
+                                        <i className="fa-solid fa-brain"></i> Pedagogía Invisible
                                     </h3>
-                                    <p className="text-sm text-slate-300 leading-relaxed">
-                                        ¿Falló Gemini? Saltamos a Pollinations (Flux).
-                                        ¿Falló Flux? Usamos Turbo. <strong>Siempre habrá una imagen</strong>. El show debe continuar.
+                                    <p className="text-sm text-slate-300 leading-relaxed text-justify">
+                                        No son preguntas aleatorias. Usamos la <strong>Taxonomía de Bloom</strong> para ajustar
+                                        la complejidad cognitiva según la dificultad que elijas (Recordar, Analizar, Crear).
                                     </p>
                                 </div>
                             </motion.div>
@@ -136,10 +130,9 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                                         <i className="fa-solid fa-globe text-xl"></i>
                                     </div>
                                     <div className="p-4">
-                                        <h4 className="text-sm font-bold text-white mb-1">Idiomas Secretos</h4>
+                                        <h4 className="text-sm font-bold text-white mb-1">Generación Multilingüe</h4>
                                         <p className="text-xs text-slate-300">
-                                            La interfaz es en español, pero puedes crear contenido en cualquier idioma.
-                                            Solo indícalo en el tema: <strong>"Animals (Inglés)"</strong> o <strong>"Verbes (Francés)"</strong>.
+                                            Aunque la interfaz se presenta en español, la generación de contenido admite múltiples idiomas. Basta con especificar el idioma deseado junto al tema (ej: 'Animals (English)').
                                         </p>
                                     </div>
                                 </div>
@@ -149,10 +142,9 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                                         <i className="fa-solid fa-ghost text-xl"></i>
                                     </div>
                                     <div className="p-4">
-                                        <h4 className="text-sm font-bold text-white mb-1">Modo Invitado vs Registrado</h4>
+                                        <h4 className="text-sm font-bold text-white mb-1">Funcionalidades de Cuenta</h4>
                                         <p className="text-xs text-slate-300">
-                                            Como invitado, tus aventuras son efímeras. Regístrate para guardar tu historial,
-                                            aparecer en los rankings globales y (próximamente) editar tus creaciones.
+                                            El modo invitado permite un uso inmediato pero limitado. El registro de usuario habilita funcionalidades avanzadas como el historial de aventuras, seguimiento de progreso y participación en clasificaciones globales.
                                         </p>
                                     </div>
                                 </div>
