@@ -485,7 +485,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                                 <span className={adv.completions > 0 ? 'text-emerald-400' : ''}>{(adv.completions > 0 ? Math.round(adv.total_score / adv.completions) : 0)}% Avg</span>
                                                             </div>
                                                         </td>
-                                                        <td className="p-6 text-center font-black text-lg">{adv.play_count}</td>
+                                                        <td className="p-6 text-center font-black text-lg">
+                                                            <div className="flex flex-col items-center">
+                                                                <span>{adv.play_count}</span>
+                                                                {(() => {
+                                                                    const todayKey = new Date().toISOString().split('T')[0];
+                                                                    const todayCount = (adv.daily_plays && adv.daily_plays[todayKey]) || 0;
+                                                                    if (todayCount > 0) {
+                                                                        return (
+                                                                            <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 mt-1">
+                                                                                <i className="fa-solid fa-arrow-up text-[8px]"></i> {todayCount} hoy
+                                                                            </span>
+                                                                        );
+                                                                    }
+                                                                    return null;
+                                                                })()}
+                                                            </div>
+                                                        </td>
                                                         <td className="p-6 text-right">
                                                             <div className="flex justify-end gap-2">
                                                                 <button onClick={() => setViewStatsId(adv.id)} className="w-8 h-8 rounded bg-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-slate-900 grid place-items-center transition-all" title="Ver Estadísticas"><i className="fa-solid fa-chart-simple text-xs"></i></button>
