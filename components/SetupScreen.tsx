@@ -134,7 +134,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <i className="fa-solid fa-pen-nib text-white/20 text-xs"></i>
                                 </div>
-                                <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-10 pr-4 focus:ring-1 focus:ring-cyan-500/50 outline-none text-sm font-semibold transition-all hover:bg-white/[0.07]" placeholder="Ej: Las Hojas, As follas (Galego)..." value={config.topic} onChange={e => setConfig({ ...config, topic: e.target.value })} />
+                                <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-10 pr-4 focus:ring-1 focus:ring-cyan-500/50 outline-none text-sm font-semibold transition-all hover:bg-white/[0.07]" placeholder="Ej: Las hojas, As follas (Galego)..." value={config.topic} onChange={e => setConfig({ ...config, topic: e.target.value })} />
                             </div>
                         </div>
                         <div className="space-y-1">
