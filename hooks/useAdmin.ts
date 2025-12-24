@@ -38,7 +38,7 @@ export const useAdmin = () => {
         // Get Lightweight Data
         const { data, error } = await supabase
             .from('adventures')
-            .select('id, created_at, topic, audience, config, play_count, total_score, completions, is_featured, thumbnail_url, daily_plays, questions, user_id')
+            .select('id, created_at, topic, audience, config, play_count, total_score, completions, is_featured, thumbnail_url, daily_plays, user_id')
             .order('created_at', { ascending: false })
             .range(start, end);
 
