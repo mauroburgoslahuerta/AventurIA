@@ -28,7 +28,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
             setLoading(true);
             const { data, error } = await supabase
                 .from('adventures')
-                .select('*')
+                .select('id, created_at, topic, audience, config, thumbnail_url, play_count, total_score, is_featured')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
