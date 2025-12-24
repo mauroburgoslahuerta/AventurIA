@@ -373,7 +373,7 @@ const App = () => {
           navigator.clipboard.writeText(shareUrl);
           showToast('🔗 Enlace copiado al portapapeles');
         } else if (type === 'whatsapp') {
-          window.open(`https://wa.me/?text=${encodeURIComponent(`¡Juega a mi aventura sobre ${config.topic}! ${shareUrl}`)}`, '_blank');
+          window.open(`https://wa.me/?text=${encodeURIComponent(`¡Juega a mi AventurIA sobre ${config.topic || normalizedTopic}! ${shareUrl}`)}`, '_blank');
         }
       }
 
