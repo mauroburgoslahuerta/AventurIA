@@ -341,7 +341,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 <i className="fa-solid fa-users text-5xl text-blue-500"></i>
                             </div>
                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Usuarios Totales</h3>
-                            <span className="text-3xl font-black text-white">{userStats.total_users}</span>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-3xl font-black text-white">{userStats.total_users}</span>
+                                {userStats.new_users_today > 0 && (
+                                    <div className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                        <i className="fa-solid fa-arrow-up"></i>
+                                        +{userStats.new_users_today} HOY
+                                    </div>
+                                )}
+                            </div>
                         </button>
 
                         {/* New Users KPI */}

@@ -156,12 +156,12 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                         })()}
                         <div className="flex flex-col gap-3 w-full max-w-sm"> {/* Restricted width for buttons */}
                             <button onClick={() => { playSfx('click'); resetGameState(); setAppState('start_screen'); }} className="w-full bg-cyan-500 text-slate-900 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-cyan-400 transition-all">Repetir Reto</button>
-                            <button onClick={() => { playSfx('click'); handleGoHome(); }} className="w-full bg-white/5 text-white/60 hover:text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 hover:border-white/20">
-                                <i className="fa-solid fa-house mr-2"></i> Menú Principal
+                            <button onClick={() => { playSfx('click'); handleGoHome(); }} className="w-full bg-white/5 text-white/60 hover:text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 hover:border-white/20 relative flex items-center justify-center">
+                                <i className="fa-solid fa-house absolute left-6"></i> Menú Principal
                             </button>
                             <div className="relative w-full">
-                                <button onClick={() => { playSfx('click'); setShowShareMenu(!showShareMenu); }} className="w-full bg-white/5 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10">
-                                    <i className="fa-solid fa-share-nodes mr-2"></i> Compartir / Descargar
+                                <button onClick={() => { playSfx('click'); setShowShareMenu(!showShareMenu); }} className="w-full bg-white/5 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10 relative flex items-center justify-center">
+                                    <i className="fa-solid fa-share-nodes absolute left-6"></i> Compartir / Descargar
                                 </button>
                                 {showShareMenu && (
                                     <div className="absolute bottom-full left-0 w-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl overflow-hidden shadow-3xl animate-fade-in z-50 flex flex-col">

@@ -106,7 +106,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                     {!isSharedAdventure && <button onClick={handleGoHome} className="flex items-center gap-3 bg-white/5 hover:bg-white hover:text-slate-900 px-6 py-2 rounded-2xl transition-all border border-white/10 font-black text-[10px] uppercase tracking-widest"><i className="fa-solid fa-house"></i> Inicio</button>}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <span className="text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/80 px-4 py-1 rounded-full backdrop-blur-md border border-white/5 shadow-xl">{normalizedTopic}</span>
+                    <span className="hidden md:block text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/80 px-4 py-1 rounded-full backdrop-blur-md border border-white/5 shadow-xl">{normalizedTopic}</span>
                 </div>
 
                 <div className="flex items-center gap-4 z-10">
