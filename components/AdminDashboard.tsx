@@ -491,6 +491,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                                 {(() => {
                                                                     const todayKey = new Date().toISOString().split('T')[0];
                                                                     const todayCount = (adv.daily_plays && adv.daily_plays[todayKey]) || 0;
+
+                                                                    // DEBUG: Ver por qué no sale
+                                                                    // console.log(`Adventure ${adv.topic}:`, { daily: adv.daily_plays, key: todayKey, count: todayCount });
+
                                                                     if (todayCount > 0) {
                                                                         return (
                                                                             <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 mt-1">
