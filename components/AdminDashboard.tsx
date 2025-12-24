@@ -345,16 +345,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </button>
 
                         {/* New Users KPI */}
-                        <button
-                            onClick={() => { playSfx('click'); setActiveTab('users'); setUserFilter('new_today'); }}
-                            className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl relative overflow-hidden group hover:border-white/20 hover:bg-white/[0.05] transition-all text-left"
-                        >
+                        {/* Daily Plays KPI (RESTORADO) */}
+                        <div className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl relative overflow-hidden group hover:border-white/20 hover:bg-white/[0.05] transition-all">
                             <div className="absolute top-0 right-0 p-6 opacity-10">
-                                <i className="fa-solid fa-user-plus text-5xl text-emerald-500"></i>
+                                <i className="fa-solid fa-bolt text-5xl text-amber-500"></i>
                             </div>
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Nuevos Hoy</h3>
-                            <span className="text-3xl font-black text-emerald-400">+{userStats.new_users_today}</span>
-                        </button>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Partidas Hoy</h3>
+                            <span className="text-3xl font-black text-amber-400">+{getPlaysToday()}</span>
+                        </div>
 
                         {/* RESTORED: Plays KPI (Total + Today) */}
                         <div className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl relative overflow-hidden group hover:border-white/20 transition-all">
@@ -417,12 +415,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                 <th className="p-6">Creador</th>
                                                 <th className="p-6 text-center">Datos</th>
                                                 <th onClick={() => handleSort('play_count')} className="p-6 text-center cursor-pointer hover:text-white">Jugadas</th>
+                                                <th onClick={() => handleSort('trending')} className="p-6 text-center cursor-pointer hover:text-white text-emerald-400">Hoy</th>
                                                 <th className="p-6 text-right">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody className="text-sm font-medium text-white/80">
                                             {getFilteredAdventures().map((adv, idx) => {
                                                 const creator = getUserIdentity(adv.user_id);
+                                                const todayKey = new Date().toISOString().split('T')[0];
+                                                const todayCount = (adv.daily_plays && adv.daily_plays[todayKey]) || 0;
+
                                                 return (
                                                     <tr key={adv.id} className={`border-b border-white/5 transition-colors ${selectedIds.includes(adv.id) ? 'bg-cyan-500/10' : 'hover:bg-white/5'}`}>
                                                         <td className="p-6">
@@ -485,26 +487,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                                 <span className={adv.completions > 0 ? 'text-emerald-400' : ''}>{(adv.completions > 0 ? Math.round(adv.total_score / adv.completions) : 0)}% Avg</span>
                                                             </div>
                                                         </td>
-                                                        <td className="p-6 text-center font-black text-lg">
-                                                            <div className="flex flex-col items-center">
-                                                                <span>{adv.play_count}</span>
-                                                                {(() => {
-                                                                    const todayKey = new Date().toISOString().split('T')[0];
-                                                                    const todayCount = (adv.daily_plays && adv.daily_plays[todayKey]) || 0;
+                                                        <td className="p-6 text-center font-black text-lg">{adv.play_count}</td>
 
-                                                                    // DEBUG: Ver por qué no sale
-                                                                    // console.log(`Adventure ${adv.topic}:`, { daily: adv.daily_plays, key: todayKey, count: todayCount });
-
-                                                                    if (todayCount > 0) {
-                                                                        return (
-                                                                            <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 mt-1">
-                                                                                <i className="fa-solid fa-arrow-up text-[8px]"></i> {todayCount} hoy
-                                                                            </span>
-                                                                        );
-                                                                    }
-                                                                    return null;
-                                                                })()}
-                                                            </div>
+                                                        {/* COLUMNA HOY */}
+                                                        <td className="p-6 text-center">
+                                                            {todayCount > 0 ? (
+                                                                <div className="inline-flex flex-col items-center">
+                                                                    <span className="text-lg font-black text-emerald-400">+{todayCount}</span>
+                                                                    <i className="fa-solid fa-bolt text-[10px] text-emerald-500/50 animate-pulse"></i>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-white/10 font-mono">-</span>
+                                                            )}
                                                         </td>
                                                         <td className="p-6 text-right">
                                                             <div className="flex justify-end gap-2">
