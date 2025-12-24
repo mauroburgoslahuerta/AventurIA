@@ -373,7 +373,14 @@ const App = () => {
           navigator.clipboard.writeText(shareUrl);
           showToast('🔗 Enlace copiado al portapapeles');
         } else if (type === 'whatsapp') {
-          window.open(`https://wa.me/?text=${encodeURIComponent(`¡Juega a mi AventurIA sobre ${config.topic || normalizedTopic}! ${shareUrl}`)}`, '_blank');
+          const text = `¡Juega a mi AventurIA sobre ${config.topic || normalizedTopic}! ${shareUrl}`;
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+          if (isMobile) {
+            window.location.href = `whatsapp://send?text=${encodeURIComponent(text)}`;
+          } else {
+            window.open(`https://web.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+          }
         }
       }
 
