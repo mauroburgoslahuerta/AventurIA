@@ -71,18 +71,18 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                             >
                                 <div className="space-y-2">
                                     <h3 className="text-lg font-bold text-cyan-400 flex items-center gap-2">
-                                        <i className="fa-solid fa-shield-halved"></i> Calidad Preventiva
+                                        <i className="fa-solid fa-pen-to-square"></i> Control Total
                                     </h3>
                                     <p className="text-sm text-slate-300 leading-relaxed text-justify">
-                                        ¿Odias cuando una app te deja fallar? Nosotros también.
-                                        AventurIA prefiere corregir tus errores tipográficos en silencio y adaptar la dificultad automáticamente
-                                        antes que mostrarte un mensaje de error. Tu única preocupación debe ser crear.
+                                        No eres dependiente de la IA. Tú tienes la última palabra.
+                                        Puedes <strong>editar cualquier pregunta, respuesta o explicación</strong> al instante.
+                                        Incluso puedes cambiar la imagen generada si no te convence, modificando su descripción visual.
                                     </p>
                                 </div>
 
                                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
                                     <h3 className="text-base font-bold text-amber-400 flex items-center gap-2">
-                                        <i className="fa-solid fa-hand-holding-heart"></i> Aikido Educativo
+                                        <i className="fa-solid fa-hand-holding-heart"></i> Enfoque Constructivo
                                     </h3>
                                     <p className="text-xs text-slate-300 leading-relaxed text-justify">
                                         No bloqueamos contenido "complicado" (violencia, insultos, temas tabú).
@@ -116,7 +116,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                                         <i className="fa-solid fa-image"></i> Resiliencia Visual
                                     </h3>
                                     <p className="text-sm text-slate-300 leading-relaxed">
-                                        ¿Falló Google Images? Probamos Gemini. ¿Falló Gemini? Saltamos a Pollinations (Flux).
+                                        ¿Falló Gemini? Saltamos a Pollinations (Flux).
                                         ¿Falló Flux? Usamos Turbo. <strong>Siempre habrá una imagen</strong>. El show debe continuar.
                                     </p>
                                 </div>
@@ -139,7 +139,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                                         <h4 className="text-sm font-bold text-white mb-1">Idiomas Secretos</h4>
                                         <p className="text-xs text-slate-300">
                                             La interfaz es en español, pero puedes crear contenido en cualquier idioma.
-                                            Solo indícalo en el tema: <strong>"Capitales (Inglés)"</strong> o <strong>"Verbos (Francés)"</strong>.
+                                            Solo indícalo en el tema: <strong>"Animals (Inglés)"</strong> o <strong>"Verbes (Francés)"</strong>.
                                         </p>
                                     </div>
                                 </div>
@@ -159,13 +159,6 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </div>
-
-                {/* Footer */}
-                <div className="p-4 border-t border-white/5 bg-black/20 text-center">
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest">
-                        AventurIA Beta v1.4 • Creado con ❤️ e IA
-                    </p>
                 </div>
             </motion.div>
         </div>
