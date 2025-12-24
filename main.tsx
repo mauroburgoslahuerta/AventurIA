@@ -739,6 +739,23 @@ const App = () => {
           sfxMuted={sfxMuted}
         />
       )}
+
+      {/* --- SHARED LOADING OVERLAY (Global) --- */}
+      {isSharing && (
+        <div className="fixed inset-0 z-[9999] bg-[#0f172a]/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in cursor-wait">
+          <div className="bg-[#0f172a] border border-white/10 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 max-w-[260px] w-full relative overflow-hidden">
+            {/* Shimmer / Glow Effect */}
+            <div className="absolute inset-0 bg-cyan-500/5"></div>
+
+            <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-cyan-400 animate-spin z-10"></div>
+
+            <div className="space-y-1 text-center z-10">
+              <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Guardando</h3>
+              <p className="text-[10px] text-white/40 font-mono">Generando enlace...</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
