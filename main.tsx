@@ -132,6 +132,13 @@ const App = () => {
 
   // Connect Admin Load to Game Launch
   const launchAdventure = async (adv: Adventure) => {
+    // 1. UPDATE URL (Critical for Shared consistency)
+    const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?id=${adv.id}`;
+    window.history.pushState({ path: newUrl }, '', newUrl);
+
+    // 2. SET SHARED FLAG (Critical for Auth/Alias check on Featured/Profile plays)
+    isSharedAdventureRef.current = true;
+
     let fullAdventure = adv;
     if (!adv.questions || adv.questions.length === 0) {
       setLoadingMessage('Cargando aventura...');
