@@ -13,6 +13,7 @@ interface AdminDashboardProps {
     toggleFeatured: (id: string, currentVal: boolean) => void;
     requestAdminLoad: (id: string) => void;
     deleteAdventure: (id: string) => void;
+    totalAdventures: number; // New Prop
     adminLoading: boolean;
     playSfx: (type: SoundType) => void;
     sfxMuted: boolean;
@@ -29,6 +30,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     toggleFeatured,
     requestAdminLoad,
     deleteAdventure,
+    totalAdventures,
     adminLoading,
     playSfx,
     sfxMuted
@@ -284,7 +286,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* TABS */}
                 <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
                     {[
-                        { id: 'adventures', label: 'Aventuras', icon: 'fa-gamepad' },
+                        { id: 'adventures', label: `Aventuras (${totalAdventures})`, icon: 'fa-gamepad' },
                         { id: 'users', label: 'Usuarios', icon: 'fa-users' },
                         { id: 'logs', label: 'Logs', icon: 'fa-stethoscope' }
                     ].map(tab => (
