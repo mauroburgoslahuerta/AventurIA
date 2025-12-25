@@ -77,13 +77,35 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
     const handleBulkDelete = async () => {
         if (!selectedIds.length) return;
         if (!confirm(`¿Vas a borrar ${selectedIds.length} aventuras? No se puede deshacer.`)) return;
+
         playSfx('wrong');
-        const { error } = await supabase.from('adventures').delete().in('id', selectedIds);
-        if (!error) {
-            setAdventures(prev => prev.filter(a => !selectedIds.includes(a.id)));
-            setSelectedIds([]);
-        } else {
-            alert('Error al borrar: ' + error.message);
+        setLoading(true); // Bloquear UI
+
+        // Borrar una por una para evitar Timeouts (Error 500)
+        // en lugar de enviar una única query masiva.
+        const idsToDelete = [...selectedIds];
+        let deletedCount = 0;
+
+        for (const id of idsToDelete) {
+            const { error } = await supabase.from('adventures').delete().eq('id', id);
+            if (!error) {
+                // Actualizar estado local progresivamente (opcional, o al final)
+                deletedCount++;
+            } else {
+                console.error(`Error borrando ${id}:`, error);
+            }
+        }
+
+        // Actualizar UI
+        setAdventures(prev => {
+            const newAdventures = prev.filter(a => !idsToDelete.includes(a.id));
+            return newAdventures;
+        });
+        setSelectedIds([]);
+        setLoading(false);
+
+        if (deletedCount < idsToDelete.length) {
+            alert(`Se borraron ${deletedCount} de ${idsToDelete.length} aventuras. Algunas fallaron.`);
         }
     };
 

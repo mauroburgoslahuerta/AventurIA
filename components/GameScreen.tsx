@@ -203,6 +203,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                                         </button>
                                     </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500/50">Explicación (Feedback)</label>
+                                    <textarea className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white font-bold text-sm outline-none focus:border-cyan-500/50" rows={2} value={questions[currentQIndex].explanation || ''} onChange={e => setQuestions(prev => prev.map((q, idx) => idx === currentQIndex ? { ...q, explanation: e.target.value } : q))} placeholder="Explicación que aparece al responder..." />
+                                </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500/50">Opciones</label>
                                     {questions[currentQIndex].options.map((opt, i) => (

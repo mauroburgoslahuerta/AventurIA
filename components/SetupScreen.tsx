@@ -90,7 +90,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                                         >
                                             <span className="text-[7px] font-bold text-cyan-400/80 leading-none tracking-widest group-hover:text-cyan-300">BETA</span>
-                                            <span className="text-[7px] font-medium text-white/40 leading-none tracking-wider group-hover:text-white/60">V1.4</span>
+                                            <span className="text-[7px] font-medium text-white/40 leading-none tracking-wider group-hover:text-white/60">V1.5</span>
                                         </div>
 
                                         {/* Install Button (Smart State) */}
