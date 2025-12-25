@@ -10,6 +10,7 @@ export const useAdmin = () => {
     const [googleImageCount, setGoogleImageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    const [totalAdventures, setTotalAdventures] = useState(0); // New State
     const ITEMS_PER_PAGE = 20;
 
     useEffect(() => {
@@ -34,6 +35,7 @@ export const useAdmin = () => {
         // Get Total Count first
         const { count } = await supabase.from('adventures').select('*', { count: 'exact', head: true });
         setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
+        setTotalAdventures(count || 0);
 
         // Get Lightweight Data
         const { data, error } = await supabase
@@ -67,6 +69,7 @@ export const useAdmin = () => {
 
     const deleteAdventure = async (id: string) => {
         setAdminAdventures(prev => prev.filter(a => a.id !== id));
+        setTotalAdventures(prev => Math.max(0, prev - 1)); // Decrement count
         await supabase.from('adventures').delete().eq('id', id);
     };
 
@@ -88,6 +91,7 @@ export const useAdmin = () => {
         totalPlays,
         completionRate,
         globalAvgScore,
+        totalAdventures,
         fetchAdminAdventures,
         toggleFeatured,
         deleteAdventure
