@@ -92,7 +92,7 @@ const App = () => {
     adminLoading,
     googleImageCount,
     totalPlays, completionRate, globalAvgScore,
-    fetchAdminAdventures, toggleFeatured, deleteAdventure,
+    fetchAdminAdventures, toggleFeatured, deleteAdventure, totalAdventures,
     // requestAdminLoad handled locally to connect hooks
   } = useAdmin();
 
@@ -535,6 +535,7 @@ const App = () => {
           toggleFeatured={toggleFeatured}
           requestAdminLoad={requestAdminLoad}
           deleteAdventure={deleteAdventure}
+          totalAdventures={totalAdventures}
           adminLoading={adminLoading}
           playSfx={(type) => playSfx(type, sfxMuted)}
           sfxMuted={sfxMuted}
