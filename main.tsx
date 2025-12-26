@@ -134,6 +134,12 @@ const App = () => {
 
   // Connect Admin Load to Game Launch
   const launchAdventure = async (adv: Adventure) => {
+    // 0. RESET STATE (Critical to clear previous 'Game Over' / 'Wrong' flags)
+    resetGameState();
+    setFeedback('none'); // Double safety
+    setScore(0);
+    setTimer(adv.config?.timerSeconds || 0); // Pre-set timer
+
     // 1. UPDATE URL (Critical for Shared consistency)
     const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?id=${adv.id}`;
     window.history.pushState({ path: newUrl }, '', newUrl);
@@ -157,6 +163,9 @@ const App = () => {
     setNormalizedTopic(fullAdventure.topic);
     setNormalizedAudience(fullAdventure.audience);
     setConfig(fullAdventure.config);
+    // Ensure timer is updated to the *loaded* config if it was fetched
+    if (fullAdventure.config?.timerSeconds) setTimer(fullAdventure.config.timerSeconds);
+
     setAppState('start_screen');
     apiIncrementPlay(fullAdventure.id);
   };
