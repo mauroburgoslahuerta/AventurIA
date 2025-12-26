@@ -386,7 +386,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                     }}
                                     className="w-full py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
                                 >
-                                    Continuar sin guardar
+                                    Continuar
                                 </button>
                             </div>
                         </div>
