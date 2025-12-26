@@ -318,12 +318,41 @@ const App = () => {
     const params = new URLSearchParams(window.location.search);
     let adventureId = params.get('id');
 
-    setLoadingMessage('Guardando tu aventura...');
+    setLoadingMessage('Guardando y subiendo imágenes...');
     setIsSharing(true);
 
     try {
-      let thumbUrl = questions[0]?.imageData || '';
+      // 1. PRE-PROCESS IMAGES: Upload all Base64 to Storage to avoid huge JSON payload
+      // Create a copy to not mutate state directly yet (optional, but cleaner for payload)
+      const optimizedQuestions = [...questions];
+      let questionsUpdated = false;
+
+      // Iterate through all questions to check for Base64 images
+      for (let i = 0; i < optimizedQuestions.length; i++) {
+        const q = { ...optimizedQuestions[i] }; // shallow copy of question
+        let imgUrl = q.imageData || '';
+
+        if (imgUrl.startsWith('data:')) {
+          console.log(`Uploading image for Q${i + 1}...`);
+          try {
+            // Re-use uploadToStorage helper
+            const publicUrl = await uploadToStorage(imgUrl);
+            if (publicUrl && publicUrl.startsWith('http')) {
+              q.imageData = publicUrl;
+              questionsUpdated = true;
+            }
+          } catch (err) {
+            console.error(`Failed to upload image Q${i + 1}`, err);
+          }
+        }
+        optimizedQuestions[i] = q;
+      }
+
+      // 2. Prepare Thumbnail (Use the first image from optimized list)
+      let thumbUrl = optimizedQuestions[0]?.imageData || '';
+      // Double check if thumb is still base64 (if upload failed above)
       if (thumbUrl.startsWith('data:')) {
+        // Try one last time specifically for thumbnail if needed, or just leave it
         thumbUrl = await uploadToStorage(thumbUrl);
       }
 
@@ -334,7 +363,7 @@ const App = () => {
           .insert({
             topic: normalizedTopic || config.topic,
             audience: normalizedAudience || config.audience,
-            questions: questions,
+            questions: optimizedQuestions, // Send optimized JSON
             config: config,
             thumbnail_url: thumbUrl,
             play_count: 0,
@@ -352,28 +381,26 @@ const App = () => {
           window.history.pushState({ path: newUrl }, '', newUrl);
         }
       } else {
-        // --- UPDATE EXISTING ADVENTURE (Fix for missing images) ---
-        // If we are the creator (checked by RLS usually, but good to check user existence),
-        // we update the questions to ensure all background-generated images are persisted.
-        // --- UPDATE EXISTING ADVENTURE (Fix for missing images) ---
-        // If we are the creator (checked by RLS usually, but good to check user existence),
-        // we update the questions to ensure all background-generated images are persisted.
+        // --- UPDATE EXISTING ADVENTURE ---
         // NOW ENABLED FOR GUESTS TOO (RLS will validate ownership or null user_id)
         const { error } = await supabase
           .from('adventures')
           .update({
-            questions: questions, // Save the latest questions with ALL images
-            thumbnail_url: thumbUrl // Update thumbnail if it changed (unlikely but safe)
+            questions: optimizedQuestions, // Send optimized JSON with URLs
+            thumbnail_url: thumbUrl
           })
           .eq('id', adventureId);
 
         if (error) {
-          console.warn("Could not update adventure (RLS restricted):", error);
-          // We don't throw here, because we still want to allow sharing the link 
-          // even if we couldn't update the source.
+          console.warn("Could not update adventure (RLS restricted or Error):", error);
         } else {
-          console.log("✅ Adventure updated with latest images before share.");
+          console.log("✅ Adventure updated with uploaded images.");
         }
+      }
+
+      // 3. Update Local State with URLs (so we don't re-upload if clicked again)
+      if (questionsUpdated) {
+        setQuestions(optimizedQuestions);
       }
 
       if (adventureId) {
