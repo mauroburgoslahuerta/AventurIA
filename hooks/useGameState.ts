@@ -166,6 +166,25 @@ export const useGameState = (
         }
     };
 
+    const [bestStreak, setBestStreak] = useState(0);
+
+    // ... (existing state)
+
+    // Reset Logic
+    const resetGameState = () => {
+        setScore(0);
+        setStreak(0);
+        setBestStreak(0); // Reset best streak
+        setCorrectCount(0);
+        setCurrentQIndex(0);
+        setFeedback('none');
+        setSelectedOption(null);
+        setTimer(config.timerSeconds);
+        localStorage.removeItem('aventuria_gamestate');
+    };
+
+    // ...
+
     const handleOptionClick = (index: number) => {
         if (feedback !== 'none') return;
         setSelectedOption(index);
@@ -181,7 +200,11 @@ export const useGameState = (
             // Score Logic: 1 point normal, 0.5 if hint used
             setScore(s => s + (showHint ? 0.5 : 1));
 
-            setStreak(s => s + 1);
+            setStreak(s => {
+                const newStreak = s + 1;
+                setBestStreak(prev => Math.max(prev, newStreak));
+                return newStreak;
+            });
             setCorrectCount(c => c + 1);
             setFeedback('correct');
             if (streak > 0 && streak % 3 === 0) {
@@ -203,6 +226,7 @@ export const useGameState = (
         currentQIndex, setCurrentQIndex,
         score, setScore,
         streak, setStreak,
+        bestStreak, setBestStreak,
         correctCount, setCorrectCount,
         feedback, setFeedback,
         selectedOption, setSelectedOption,
