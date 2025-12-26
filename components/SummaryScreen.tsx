@@ -14,8 +14,7 @@ interface Session {
 interface SummaryScreenProps {
     handleGoHome: () => void;
     normalizedTopic: string;
-    handleGoHome: () => void;
-    normalizedTopic: string;
+
     streak: number;
     bestStreak: number;
     correctCount: number;
@@ -35,10 +34,8 @@ interface SummaryScreenProps {
 }
 
 export const SummaryScreen: React.FC<SummaryScreenProps> = ({
-    handleGoHome,
-    normalizedTopic,
-    handleGoHome,
-    normalizedTopic,
+
+
     streak,
     bestStreak,
     correctCount,
