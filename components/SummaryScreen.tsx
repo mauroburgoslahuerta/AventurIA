@@ -34,6 +34,8 @@ interface SummaryScreenProps {
 }
 
 export const SummaryScreen: React.FC<SummaryScreenProps> = ({
+    handleGoHome,
+    normalizedTopic,
 
 
     streak,
