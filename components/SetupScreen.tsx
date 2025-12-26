@@ -65,7 +65,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                    The `showFeaturedSheet` state and `handleGenerateClick` are close. I can insert `dragControls` there.
                 */}
 
-                <div className="glass-card overflow-hidden shadow-3xl flex flex-col bg-[#0f172a]/60 border border-white/5 px-8 pb-8 pt-4">
+                <div className="glass-card overflow-hidden shadow-3xl flex flex-col bg-[#0b1120]/95 border border-white/5 px-8 pb-8 pt-4">
                     {/* Header Container */}
                     <div className="relative w-full flex flex-row items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
 
