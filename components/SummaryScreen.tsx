@@ -249,8 +249,9 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                                             <tbody className="text-xs font-bold">
                                                 {sortedLeaderboard.map((entry, idx) => {
                                                     // Convert Percentage (DB) to Raw Score for Display
-                                                    const bestRaw = Math.round((entry.score / 100) * questionCount);
-                                                    const firstRaw = entry.first_score !== undefined ? Math.round((entry.first_score / 100) * questionCount) : '-';
+                                                    // Use toFixed(1) and parseFloat to handle decimals (e.g. 4.5) without rounding up to 5
+                                                    const bestRaw = parseFloat(((entry.score / 100) * questionCount).toFixed(1));
+                                                    const firstRaw = entry.first_score !== undefined ? parseFloat(((entry.first_score / 100) * questionCount).toFixed(1)) : '-';
 
                                                     return (
                                                         <tr key={entry.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
