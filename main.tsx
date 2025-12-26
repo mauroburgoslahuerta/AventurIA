@@ -340,7 +340,7 @@ const App = () => {
             play_count: 0,
             completions: 0,
             total_score: 0,
-            user_id: user?.id
+            user_id: user?.id || null // Explicitly handle anon users
           })
           .select()
           .single();
@@ -500,7 +500,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative">
+    <div className={`min-h-screen ${['setup', 'start_screen', 'profile', 'admin_login'].includes(appState) ? 'bg-gradient-to-br from-blue-100 to-blue-200' : 'bg-[#0f172a]'} text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative transition-colors duration-700`}>
       {showConfetti && <CustomConfetti />}
 
       {showInfoModal && (
