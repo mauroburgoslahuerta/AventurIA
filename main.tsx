@@ -59,7 +59,7 @@ const App = () => {
     questions, setQuestions,
     currentQIndex, setCurrentQIndex,
     score, setScore,
-    score, setScore,
+
     streak, setStreak,
     bestStreak,
     correctCount, setCorrectCount,
