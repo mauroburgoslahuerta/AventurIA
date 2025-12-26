@@ -270,6 +270,7 @@ const App = () => {
             }
             if (data) {
               console.log("✅ Adventure Loaded:", data);
+              resetGameState(); // Force clean state
               setQuestions(data.questions);
               setNormalizedTopic(data.topic);
               setNormalizedAudience(data.audience);
