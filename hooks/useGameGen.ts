@@ -279,31 +279,32 @@ export const useGameGen = (
             // Update state with ready images
             setQuestions([...data.questions]);
 
-            // --- AUTO-SAVE (Logged In Users) ---
-            if (user) {
-                try {
-                    const { data: savedData, error: saveError } = await supabase
-                        .from('adventures')
-                        .insert({
-                            topic: data.correctedTopic || config.topic,
-                            audience: data.correctedAudience || config.audience,
-                            questions: data.questions,
-                            config: config,
-                            thumbnail_url: data.questions[0]?.imageData || '',
-                            user_id: user.id
-                        })
-                        .select()
-                        .single();
+            // --- AUTO-SAVE (ALL USERS) ---
+            try {
+                const { data: savedData, error: saveError } = await supabase
+                    .from('adventures')
+                    .insert({
+                        topic: data.correctedTopic || config.topic,
+                        audience: data.correctedAudience || config.audience,
+                        questions: data.questions,
+                        config: config,
+                        thumbnail_url: data.questions[0]?.imageData || '',
+                        user_id: user?.id || null // Handle anon users
+                    })
+                    .select()
+                    .single();
 
-                    if (!saveError && savedData) {
-                        console.log("Auto-saved adventure:", savedData.id);
-                        // Update URL silently
-                        const newUrl = `${window.location.pathname}?id=${savedData.id}`;
-                        window.history.pushState({ path: newUrl }, '', newUrl);
-                    }
-                } catch (err) {
-                    console.error("Auto-save failed:", err);
+                if (!saveError && savedData) {
+                    console.log("Auto-saved adventure:", savedData.id);
+                    // Update URL silently
+                    const newUrl = `${window.location.pathname}?id=${savedData.id}`;
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+                } else if (saveError) {
+                    // Log but don't stop flow
+                    console.warn("Auto-save failed (likely permissions):", saveError);
                 }
+            } catch (err) {
+                console.error("Auto-save exception:", err);
             }
 
             // Start Background Preloading
