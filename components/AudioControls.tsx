@@ -17,7 +17,7 @@ export const AudioControls: React.FC<AudioControlsProps> = ({
         <div className="fixed top-4 left-4 z-[300] flex flex-col gap-2 items-start">
             <button
                 onClick={() => setShowAudioMenu(!showAudioMenu)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg border ${showAudioMenu ? 'bg-cyan-500 text-slate-900 border-white' : 'bg-white/10 text-white border-white/10 hover:bg-white/20'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg border ${showAudioMenu ? 'bg-cyan-500 text-slate-900 border-white' : 'bg-[#0f172a]/80 text-white border-white/10 hover:bg-[#0f172a]'}`}
             >
                 <i className="fa-solid fa-volume-high"></i>
             </button>

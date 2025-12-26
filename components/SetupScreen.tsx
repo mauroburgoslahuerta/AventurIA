@@ -344,7 +344,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
             {/* --- Footer: Creado y desarrollado por --- */}
             <div className="fixed bottom-1 right-1 z-50 flex flex-col items-end gap-0 opacity-100 transition-opacity duration-300 pointer-events-none md:pointer-events-auto">
-                <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.2em] text-white leading-none -mb-1 opacity-50">Creado y desarrollado por</span>
+                <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.2em] text-cyan-900/60 leading-none -mb-1">Creado y desarrollado por</span>
                 <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform pointer-events-auto">
                     <img src={MAURO_BURGOS_LOGO} alt="Mauro Burgos" className="h-10 md:h-20 w-auto drop-shadow-lg" />
                 </a>
