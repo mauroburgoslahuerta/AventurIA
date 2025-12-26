@@ -355,24 +355,24 @@ const App = () => {
         // --- UPDATE EXISTING ADVENTURE (Fix for missing images) ---
         // If we are the creator (checked by RLS usually, but good to check user existence),
         // we update the questions to ensure all background-generated images are persisted.
-        if (user) {
-          const { error } = await supabase
-            .from('adventures')
-            .update({
-              questions: questions, // Save the latest questions with ALL images
-              thumbnail_url: thumbUrl // Update thumbnail if it changed (unlikely but safe)
-            })
-            .eq('id', adventureId)
-            // .eq('user_id', user.id) // RLS handles this, but safety first? No, let RLS handle permission.
-            ;
+        // --- UPDATE EXISTING ADVENTURE (Fix for missing images) ---
+        // If we are the creator (checked by RLS usually, but good to check user existence),
+        // we update the questions to ensure all background-generated images are persisted.
+        // NOW ENABLED FOR GUESTS TOO (RLS will validate ownership or null user_id)
+        const { error } = await supabase
+          .from('adventures')
+          .update({
+            questions: questions, // Save the latest questions with ALL images
+            thumbnail_url: thumbUrl // Update thumbnail if it changed (unlikely but safe)
+          })
+          .eq('id', adventureId);
 
-          if (error) {
-            console.warn("Could not update adventure (probably not owner):", error);
-            // We don't throw here, because we still want to allow sharing the link 
-            // even if we couldn't update the source (e.g. sharing someone else's adventure).
-          } else {
-            console.log("✅ Adventure updated with latest images before share.");
-          }
+        if (error) {
+          console.warn("Could not update adventure (RLS restricted):", error);
+          // We don't throw here, because we still want to allow sharing the link 
+          // even if we couldn't update the source.
+        } else {
+          console.log("✅ Adventure updated with latest images before share.");
         }
       }
 
@@ -500,7 +500,7 @@ const App = () => {
   };
 
   return (
-    <div className={`min-h-screen ${['setup', 'start_screen', 'profile', 'admin_login'].includes(appState) ? 'bg-gradient-to-br from-blue-100 to-blue-200' : 'bg-[#0f172a]'} text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative transition-colors duration-700`}>
+    <div className={`min-h-screen ${['setup', 'start_screen', 'profile', 'admin_login'].includes(appState) ? 'bg-[linear-gradient(135deg,_#42bcfc_0%,_#2563eb_100%)]' : 'bg-[#0f172a]'} text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative transition-colors duration-700`}>
       {showConfetti && <CustomConfetti />}
 
       {showInfoModal && (
