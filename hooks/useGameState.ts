@@ -129,6 +129,7 @@ export const useGameState = (
     const resetGameState = () => {
         setScore(0);
         setStreak(0);
+        setBestStreak(0);
         setCorrectCount(0);
         setCurrentQIndex(0);
         setFeedback('none');
@@ -171,17 +172,7 @@ export const useGameState = (
     // ... (existing state)
 
     // Reset Logic
-    const resetGameState = () => {
-        setScore(0);
-        setStreak(0);
-        setBestStreak(0); // Reset best streak
-        setCorrectCount(0);
-        setCurrentQIndex(0);
-        setFeedback('none');
-        setSelectedOption(null);
-        setTimer(config.timerSeconds);
-        localStorage.removeItem('aventuria_gamestate');
-    };
+
 
     // ...
 
