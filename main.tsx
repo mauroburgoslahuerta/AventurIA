@@ -500,7 +500,7 @@ const App = () => {
   };
 
   return (
-    <div className={`min-h-screen ${['setup', 'start_screen', 'profile', 'admin_login'].includes(appState) ? 'bg-[linear-gradient(135deg,_#42bcfc_0%,_#2563eb_100%)]' : 'bg-[#0f172a]'} text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative transition-colors duration-700`}>
+    <div className="min-h-screen bg-[linear-gradient(135deg,_#42bcfc_0%,_#2563eb_100%)] text-white font-['Poppins'] selection:bg-cyan-500/30 overflow-x-hidden flex flex-col items-center justify-center relative transition-colors duration-700">
       {showConfetti && <CustomConfetti />}
 
       {showInfoModal && (
