@@ -65,7 +65,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                    The `showFeaturedSheet` state and `handleGenerateClick` are close. I can insert `dragControls` there.
                 */}
 
-                <div className="glass-card overflow-hidden shadow-3xl flex flex-col bg-[#0b1120]/95 border border-white/5 px-8 pb-8 pt-4">
+                <div className="glass-card overflow-hidden shadow-2xl flex flex-col bg-[#0f172a]/85 backdrop-blur-xl border border-white/10 px-8 pb-8 pt-4">
                     {/* Header Container */}
                     <div className="relative w-full flex flex-row items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
 
@@ -344,7 +344,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
             {/* --- Footer: Creado y desarrollado por --- */}
             <div className="fixed bottom-1 right-1 z-50 flex flex-col items-end gap-0 opacity-100 transition-opacity duration-300 pointer-events-none md:pointer-events-auto">
-                <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.2em] text-cyan-900/60 leading-none -mb-1">Creado y desarrollado por</span>
+                <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.2em] text-white/30 leading-none -mb-1">Creado y desarrollado por</span>
                 <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform pointer-events-auto">
                     <img src={MAURO_BURGOS_LOGO} alt="Mauro Burgos" className="h-10 md:h-20 w-auto drop-shadow-lg" />
                 </a>

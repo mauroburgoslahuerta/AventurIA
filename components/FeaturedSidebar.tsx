@@ -36,7 +36,7 @@ export const FeaturedSidebar: React.FC<FeaturedSidebarProps> = ({
             </div>
 
             {/* Sidebar Content */}
-            <div className={`bg-[#0f172a]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl pointer-events-auto max-h-[60vh] overflow-hidden flex flex-col transition-all duration-300 origin-left ${isSidebarCollapsed ? 'opacity-0 scale-90 -translate-x-10 pointer-events-none' : 'opacity-100 scale-100 translate-x-0'}`}>
+            <div className={`bg-[#0f172a]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl pointer-events-auto max-h-[60vh] overflow-hidden flex flex-col transition-all duration-300 origin-left ${isSidebarCollapsed ? 'opacity-0 scale-90 -translate-x-10 pointer-events-none' : 'opacity-100 scale-100 translate-x-0'}`}>
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5 shrink-0">
                     <div className="flex items-center gap-2">
                         <i className="fa-solid fa-star text-amber-500 text-xs animate-pulse"></i>
