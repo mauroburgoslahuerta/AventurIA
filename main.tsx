@@ -134,7 +134,11 @@ const App = () => {
   // Connect Admin Load to Game Launch
   const launchAdventure = async (adv: Adventure) => {
     // 0. RESET STATE (Critical to clear previous 'Game Over' / 'Wrong' flags)
+    // 0. RESET STATE (Critical to clear previous 'Game Over' / 'Wrong' flags)
     resetGameState();
+    setIsCreatorMode(false);
+    setIsEditing(false);
+    setIsSharing(false);
     setFeedback('none'); // Double safety
     setScore(0);
     setTimer(adv.config?.timerSeconds || 0); // Pre-set timer
