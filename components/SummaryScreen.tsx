@@ -117,31 +117,15 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
             exit="exit"
             className="w-full max-w-7xl h-full flex flex-col py-4 z-10 overflow-hidden"
         >
-            {/* Header (Simplified for Summary - No Timer) */}
-            <div className="flex justify-between items-center mb-6 bg-white/[0.03] backdrop-blur-3xl p-5 rounded-3xl border border-white/10 shrink-0 relative">
-                <div className="flex items-center z-10">
-                    {isCreatorMode && <button onClick={handleGoHome} className="flex items-center gap-3 bg-white/5 hover:bg-white hover:text-slate-900 px-6 py-2 rounded-2xl transition-all border border-white/10 font-black text-[10px] uppercase tracking-widest"><i className="fa-solid fa-house"></i> Inicio</button>}
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <span className="hidden md:block text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/80 px-4 py-1 rounded-full backdrop-blur-md border border-white/5 shadow-xl">{normalizedTopic}</span>
-                </div>
-
-                <div className="flex items-center gap-4 z-10">
-                    <div className={`bg-orange-500/10 border border-orange-500/30 px-5 py-3 rounded-2xl flex items-center gap-3 transition-opacity duration-300 ${streak >= 1 ? 'opacity-100' : 'opacity-0'}`}>
-                        <i className={`fa-solid fa-fire text-orange-500 ${streak >= 3 ? 'animate-bounce' : ''}`}></i>
-                        <span className="font-black text-xs text-orange-500">{streak}</span>
-                    </div>
-
-                    <div className="bg-cyan-500/10 border border-cyan-500/30 px-6 py-3 rounded-2xl font-black text-cyan-400 text-xs tracking-widest">{correctCount}/{questionCount}</div>
-                </div>
-            </div>
+            {/* Header Removed as per user request */}
 
             <div className="flex-1 overflow-y-auto custom-scrollbar p-6"> {/* Enable Scrolling */}
                 <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-8 items-start justify-center">
 
                     {/* LEFT COLUMN: RESULT CARD (Main Focus - 2/3) */}
                     <div className="w-full md:w-2/3 glass-card p-8 text-center border border-white/10 flex flex-col items-center">
-                        <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-6 text-cyan-500">Misión Completada</span>
+                        <span className="text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/50 px-4 py-1 rounded-full border border-white/5 mb-6">{normalizedTopic}</span>
+                        <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-2 text-white/40">Misión Completada</span>
                         <span className="text-8xl font-black mb-6">{score}/{questionCount}</span>
                         {(() => {
                             const r = getRank(score, questionCount);
