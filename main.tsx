@@ -59,7 +59,9 @@ const App = () => {
     questions, setQuestions,
     currentQIndex, setCurrentQIndex,
     score, setScore,
+    score, setScore,
     streak, setStreak,
+    bestStreak,
     correctCount, setCorrectCount,
     feedback, setFeedback,
     selectedOption, setSelectedOption,
@@ -690,6 +692,7 @@ const App = () => {
             handleGoHome={handleGoHome}
             normalizedTopic={normalizedTopic}
             streak={streak}
+            bestStreak={bestStreak}
             correctCount={correctCount}
             questionCount={questions.length}
             score={score}
