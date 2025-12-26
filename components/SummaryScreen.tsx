@@ -14,7 +14,10 @@ interface Session {
 interface SummaryScreenProps {
     handleGoHome: () => void;
     normalizedTopic: string;
+    handleGoHome: () => void;
+    normalizedTopic: string;
     streak: number;
+    bestStreak: number;
     correctCount: number;
     questionCount: number;
     score: number;
@@ -34,7 +37,10 @@ interface SummaryScreenProps {
 export const SummaryScreen: React.FC<SummaryScreenProps> = ({
     handleGoHome,
     normalizedTopic,
+    handleGoHome,
+    normalizedTopic,
     streak,
+    bestStreak,
     correctCount,
     questionCount,
     score,
@@ -125,8 +131,20 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                     {/* LEFT COLUMN: RESULT CARD (Main Focus - 2/3) */}
                     <div className="w-full md:w-2/3 glass-card p-8 text-center border border-white/10 flex flex-col items-center">
                         <span className="text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/50 px-4 py-1 rounded-full border border-white/5 mb-6">{normalizedTopic}</span>
-                        <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-2 text-white/40">Misión Completada</span>
+
                         <span className="text-8xl font-black mb-6">{score}/{questionCount}</span>
+                        {/* Stats Row */}
+                        <div className="flex items-center justify-center gap-4 mb-8 w-full max-w-xs">
+                            <div className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col items-center gap-1">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Precisión</span>
+                                <span className="text-xl font-black">{Math.round((correctCount / questionCount) * 100)}%</span>
+                            </div>
+                            <div className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col items-center gap-1">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">Mejor Racha</span>
+                                <span className="text-xl font-black">{bestStreak}</span>
+                            </div>
+                        </div>
+
                         {(() => {
                             const r = getRank(score, questionCount);
                             return (
