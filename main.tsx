@@ -588,7 +588,7 @@ const App = () => {
         )}
 
         {appState === 'generating' && (
-          <motion.div key="generating" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="flex flex-col items-center space-y-8 max-w-lg w-full text-center z-10 p-6">
+          <motion.div key="generating" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="glass-card shadow-3xl bg-[#0f172a]/85 backdrop-blur-xl border border-white/10 flex flex-col items-center space-y-8 max-w-lg w-full text-center z-10 p-12 rounded-3xl">
             <img src={AI_ENGINE_LOGO} className="h-24 animate-pulse-slow" />
             <div className="space-y-4 w-full">
               <h2 className="text-xl font-black uppercase tracking-widest leading-loose">{flavorText}</h2>
@@ -597,7 +597,7 @@ const App = () => {
               </div>
               <button
                 onClick={() => { playSfx('click', sfxMuted); handleGoHome(); setAppState('setup'); }}
-                className="mt-8 text-xs font-bold text-white/40 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2"
+                className="mt-8 text-xs font-bold text-white/40 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2 justify-center"
               >
                 <i className="fa-solid fa-xmark"></i> Cancelar
               </button>
