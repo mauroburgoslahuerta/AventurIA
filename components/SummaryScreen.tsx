@@ -132,41 +132,41 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                         <span className="text-xs md:text-sm font-black uppercase text-cyan-400 tracking-widest bg-[#0f172a]/50 px-4 py-1 rounded-full border border-white/5 mb-6">{normalizedTopic}</span>
 
                         <span className="text-8xl font-black mb-6">{score}/{questionCount}</span>
-                        {/* Option C: Compact Circular Rings */}
-                        <div className="flex items-center justify-center gap-8 mb-6 w-full animate-fade-in">
+                        {/* Option C: Compact Circular Rings (Final Refinement) */}
+                        <div className="flex items-center justify-center gap-6 mb-6 w-full animate-fade-in">
                             {/* Precision Ring */}
                             <div className="flex flex-col items-center gap-2">
-                                <div className="relative w-20 h-20 flex items-center justify-center">
+                                <div className="relative w-12 h-12 flex items-center justify-center">
                                     {/* Background Circle */}
                                     <svg className="w-full h-full rotate-[-90deg]">
-                                        <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-emerald-500/10" />
+                                        <circle cx="24" cy="24" r="21" stroke="currentColor" strokeWidth="2.5" fill="transparent" className="text-white/5" />
                                         {/* Progress Circle */}
                                         <circle
-                                            cx="40" cy="40" r="36"
-                                            stroke="currentColor" strokeWidth="6"
+                                            cx="24" cy="24" r="21"
+                                            stroke="currentColor" strokeWidth="2.5"
                                             fill="transparent"
-                                            strokeDasharray={2 * Math.PI * 36}
-                                            strokeDashoffset={(2 * Math.PI * 36) - ((correctCount / questionCount) * (2 * Math.PI * 36))}
+                                            strokeDasharray={2 * Math.PI * 21}
+                                            strokeDashoffset={(2 * Math.PI * 21) - ((correctCount / questionCount) * (2 * Math.PI * 21))}
                                             strokeLinecap="round"
                                             className="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)] transition-all duration-1000 ease-out"
                                         />
                                     </svg>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-sm font-black text-white">{Math.round((correctCount / questionCount) * 100)}%</span>
+                                        <span className="text-xs font-black text-white">{Math.round((correctCount / questionCount) * 100)}%</span>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400/80">Precisión</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400/60">Precisión</span>
                             </div>
 
                             {/* Streak Ring */}
                             <div className="flex flex-col items-center gap-2">
-                                <div className="relative w-20 h-20 flex items-center justify-center rounded-full border-4 border-amber-500/20 bg-amber-500/5 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
-                                    <div className="flex flex-col items-center justify-center gap-0.5">
-                                        <i className="fa-solid fa-fire text-amber-500 text-lg animate-pulse drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"></i>
-                                        <span className="text-sm font-black text-white leading-none">{bestStreak}</span>
+                                <div className="relative w-12 h-12 flex items-center justify-center rounded-full border-2 border-amber-500/30 bg-transparent shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+                                    <div className="flex flex-col items-center justify-center gap-0">
+                                        <i className="fa-solid fa-fire text-amber-500 text-xs animate-pulse opacity-80"></i>
+                                        <span className="text-xs font-black text-white leading-none">{bestStreak}</span>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-amber-500/80">Racha</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-amber-500/60">Racha</span>
                             </div>
                         </div>
 
