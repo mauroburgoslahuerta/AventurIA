@@ -71,6 +71,7 @@ export const useGameState = (
                     setCorrectCount(parsed.correctCount);
                     setNormalizedTopic(parsed.normalizedTopic);
                     setNormalizedAudience(parsed.normalizedAudience);
+                    if (parsed.playerAlias) setPlayerAlias(parsed.playerAlias);
                     // showToast("🔄 Partida recuperada"); // Toast managed in main/utils or we need callback
                 }
             } catch (e) { console.error("Failed to load save", e); }
@@ -95,6 +96,7 @@ export const useGameState = (
             correctCount,
             normalizedTopic,
             normalizedAudience,
+            playerAlias, // Persist Alias
             sfxMuted, // Note: sfxMuted passed from prop, might need sync
             adventureId: new URLSearchParams(window.location.search).get('id')
         };

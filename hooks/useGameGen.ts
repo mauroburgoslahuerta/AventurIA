@@ -28,8 +28,11 @@ export const useGameGen = (
         return new Promise(async (resolve, reject) => {
             const attemptPollinations = (model: string) => {
                 const encodedPrompt = encodeURIComponent(prompt);
+                const seed = Math.floor(Math.random() * 1000000);
                 const modelParam = model ? `&model=${model}` : '';
-                const url = `/pollinations/prompt/${encodedPrompt}?width=1024&height=600${modelParam}&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+
+                // Secure Proxy
+                const url = `/api/pollinations-proxy?prompt=${encodedPrompt}&width=1024&height=600${modelParam}&seed=${seed}`;
 
                 const img = new Image();
                 const safetyTimeout = setTimeout(() => {
@@ -141,10 +144,13 @@ export const useGameGen = (
         };
 
         const attemptPollinations = (model: string) => {
+            // Use our own secure proxy handling the API Key
             const encodedPrompt = encodeURIComponent(prompt);
-            // If model string is empty/null, Pollinations uses default (Midjourney-like)
+            const seed = Math.floor(Math.random() * 1000000);
             const modelParam = model ? `&model=${model}` : '';
-            const url = `/pollinations/prompt/${encodedPrompt}?width=1024&height=600${modelParam}&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+
+            // Point to our local proxy
+            const url = `/api/pollinations-proxy?prompt=${encodedPrompt}&width=1024&height=600${modelParam}&seed=${seed}`;
 
             const img = new Image();
 
@@ -238,7 +244,7 @@ export const useGameGen = (
         // Start from startIndex (avoid re-fetching already preloaded images)
         qs.forEach((q, i) => {
             if (i < startIndex) return;
-            setTimeout(() => generateImage(i, q.visualPrompt, false, -1, qs), (i - startIndex + 1) * 4000); // Pass -1 as currentQIndex to avoid loading state flicker
+            setTimeout(() => generateImage(i, q.visualPrompt, false, -1, qs), (i - startIndex + 1) * 2000); // Pass -1 as currentQIndex to avoid loading state flicker
         });
     };
 
