@@ -109,9 +109,18 @@ const App = () => {
   // --- Local UI State (Toasts, Popups) ---
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false); // Tooltip State
   const [showDownloadPopup, setShowDownloadPopup] = useState(false);
   const [flavorText, setFlavorText] = useState(LOADING_SUBTITLES[0]);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  // Auto-show Tooltip on mount (once)
+  useEffect(() => {
+    // Wait 2 seconds, show for 8 seconds
+    const t1 = setTimeout(() => setShowInfoTooltip(true), 2000);
+    const t2 = setTimeout(() => setShowInfoTooltip(false), 10000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   // --- Helpers that bridge hooks ---
 
@@ -742,13 +751,38 @@ const App = () => {
 
       {appState === 'setup' && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-          <button
-            onClick={() => { playSfx('click', sfxMuted); setShowInfoModal(true); }}
-            className="w-10 h-10 rounded-full bg-[#0f172a]/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-xl"
-            title="Sobre AventurIA"
-          >
-            <i className="fa-solid fa-circle-info text-sm"></i>
-          </button>
+
+          {/* Info Button with Tooltip */}
+          <div className="relative">
+            <button
+              onClick={() => { playSfx('click', sfxMuted); setShowInfoModal(true); setShowInfoTooltip(false); }}
+              className="w-10 h-10 rounded-full bg-[#0f172a]/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-xl relative overflow-visible group"
+              title="Sobre AventurIA"
+            >
+              <i className="fa-solid fa-circle-info text-sm group-hover:animate-pulse"></i>
+
+              {/* Pulsing Ring for attention if tooltip is shown */}
+              {showInfoTooltip && (
+                <span className="absolute inset-0 rounded-full border-2 border-cyan-400/50 animate-ping pointer-events-none"></span>
+              )}
+            </button>
+
+            <AnimatePresence>
+              {showInfoTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10, scale: 0.9 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="absolute top-1/2 -translate-y-1/2 right-full mr-3 w-48 bg-cyan-500 text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl shadow-cyan-500/20 pointer-events-none z-50 flex items-center gap-2"
+                >
+                  <i className="fa-solid fa-lightbulb text-yellow-900 animate-bounce"></i>
+                  <span>Filosofía y consejos de uso</span>
+                  {/* Arrow */}
+                  <div className="absolute top-1/2 -translate-y-1/2 left-full -ml-1 w-2 h-2 bg-cyan-500 rotate-45 transform"></div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {user ? (
             <div className="flex items-center gap-3 bg-[#0f172a]/60 backdrop-blur-md border border-white/10 rounded-full pl-2 pr-1 py-1 shadow-xl">
