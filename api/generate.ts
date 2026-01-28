@@ -73,7 +73,7 @@ export default async function handler(req, res) {
   CRITICAL TECHNICAL INSTRUCTION: Respond ONLY with valid, raw JSON. Do NOT use markdown code blocks (no \`\`\`json). Do NOT add conversational text before or after the JSON.`;
 
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: {
