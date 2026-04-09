@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Adventure, AppState } from '../types';
+import { QRModal } from './QRModal';
 
 interface ProfileScreenProps {
     user: any;
@@ -20,6 +21,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
     const [adventureSessions, setAdventureSessions] = useState<any[]>([]);
     const [paramLoading, setParamLoading] = useState(false);
     const [selectedIds, setSelectedIds] = useState<string[]>([]); // New: Selection State
+    const [qrAdventureId, setQrAdventureId] = useState<string | null>(null);
 
     // Fetch User Adventures
     useEffect(() => {
@@ -172,6 +174,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
     // ... existing remove this block if handled by multi_replace ...
 
     return (
+        <>
         <div className="min-h-screen w-full flex flex-col items-center bg-[#0f172a] text-white p-6 relative overflow-hidden">
             {/* ... (Keep Background) ... */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
@@ -346,6 +349,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
                                         </div>
                                         <div className="flex gap-2">
                                             <button
+                                                onClick={(e) => { e.stopPropagation(); playSfx('click'); setQrAdventureId(adv.id); }}
+                                                className="w-8 h-8 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-400/60 hover:text-violet-400 flex items-center justify-center transition-colors"
+                                                title="Generar código QR"
+                                            >
+                                                <i className="fa-solid fa-qrcode text-xs"></i>
+                                            </button>
+                                            <button
                                                 onClick={(e) => handleQuickShare(adv.id, e)}
                                                 className="w-8 h-8 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400/60 hover:text-cyan-400 flex items-center justify-center transition-colors"
                                                 title="Copiar Enlace para Compartir"
@@ -399,5 +409,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
                 )}
             </div>
         </div>
+
+        {qrAdventureId && (() => {
+            const adv = adventures.find(a => a.id === qrAdventureId);
+            return (
+                <QRModal
+                    url={`${window.location.origin}/?id=${qrAdventureId}`}
+                    title={adv?.topic || 'Aventura'}
+                    onClose={() => setQrAdventureId(null)}
+                />
+            );
+        })()}
+        </>
     );
 };

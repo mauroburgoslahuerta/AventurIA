@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
 import { getRank } from '../utils';
 import { SoundType } from '../types';
+import { QRModal } from './QRModal';
 
 interface Session {
     id: string;
@@ -63,6 +64,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
 
     const [leaderboard, setLeaderboard] = useState<Session[]>([]);
     const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
+    const [showQRModal, setShowQRModal] = useState(false);
 
     // Sorting State
     const [sortConfig, setSortConfig] = useState<{ key: 'score' | 'first_score', direction: 'desc' | 'asc' }>({ key: 'score', direction: 'desc' });
@@ -114,6 +116,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
     }, []);
 
     return (
+        <>
         <motion.div
             key="summary"
             variants={pageVariants}
@@ -221,6 +224,20 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                                                 <div className="text-[10px] text-white/40">Compartir enlace al reto</div>
                                             </div>
                                         </button>
+                                        {isCreatorMode && (
+                                            <button
+                                                onClick={() => { playSfx('click'); setShowShareMenu(false); setShowQRModal(true); }}
+                                                className="p-4 hover:bg-white/5 flex items-center gap-3 text-left transition-colors group"
+                                            >
+                                                <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 group-hover:bg-violet-500 group-hover:text-white transition-all">
+                                                    <i className="fa-solid fa-qrcode"></i>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="font-bold text-xs uppercase tracking-wider text-violet-400">Código QR</div>
+                                                    <div className="text-[10px] text-white/40">Proyectar en clase / Imprimir</div>
+                                                </div>
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -303,5 +320,14 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({
                 </div>
             </div>
         </motion.div>
+
+        {showQRModal && (
+            <QRModal
+                url={window.location.href}
+                title={normalizedTopic}
+                onClose={() => setShowQRModal(false)}
+            />
+        )}
+        </>
     );
 };

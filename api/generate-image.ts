@@ -40,7 +40,10 @@ export default async function handler(req, res) {
                     'Referer': 'http://localhost:3000/'
                 },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseModalities: ["Image"]
+                    }
                 })
             }
         );
