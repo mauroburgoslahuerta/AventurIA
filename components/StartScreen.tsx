@@ -78,7 +78,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 </button>
             )}
             <img src={START_SCREEN_LOGO} className="h-24 mb-8" />
-            <h1 className="text-xl md:text-3xl font-black mb-2 uppercase leading-tight max-w-lg break-words hyphens-auto text-cyan-50">{normalizedTopic}</h1>
+            <h1 className="text-xl md:text-3xl font-black mb-2 uppercase leading-tight max-w-lg hyphens-none text-cyan-50">{normalizedTopic}</h1>
             <p className="mb-8 text-xs text-white/40 italic">Para: <span className="text-white/80 font-bold">{normalizedAudience}</span></p>
 
             <div className="flex items-center justify-center gap-3 mb-8 w-full">
