@@ -20,6 +20,8 @@ export const useGameGen = (
     const [isUsingPollinations, setIsUsingPollinations] = useState(false);
     // Ref to avoid stale closure bug: async functions always read the current value
     const isUsingPollinationsRef = useRef(false);
+    // Guard against duplicate concurrent generation for the same question index
+    const inProgressImages = useRef<Set<number>>(new Set());
 
     /* 
      * 🔒 BLINDAJE: TRIPLE FALLBACK DE IMÁGENES (CRÍTICO)
@@ -146,6 +148,12 @@ export const useGameGen = (
             return;
         }
 
+        // Guard: prevent duplicate concurrent generation for the same index
+        if (!forceRegen && inProgressImages.current.has(index)) {
+            return;
+        }
+        inProgressImages.current.add(index);
+
         const startPollinations = (modelToStartWith: string) => {
             attemptPollinations(modelToStartWith);
         };
@@ -194,7 +202,6 @@ export const useGameGen = (
 
         // LOGIC: If regenerating OR already flagging quota exceeded, skip Gemini.
         // 'forceRegen' parameter ensures we don't rely on async state 'isRegeneratingImage' exclusively.
-        console.log(`[IMG-DIAG Q${index}] forceRegen=${forceRegen} | isRegen=${isRegeneratingImage} | pollinationsRef=${isUsingPollinationsRef.current}`);
         if (forceRegen || isRegeneratingImage || isUsingPollinationsRef.current) {
             startPollinations('flux');
             return;
@@ -239,11 +246,13 @@ export const useGameGen = (
             setIsImageReady(true);
             setIsRegeneratingImage(false);
             incrementDailyQuota();
+            inProgressImages.current.delete(index);
 
         } catch (e) {
             console.warn("Gemini image failed, switching to Pollinations...", e);
             // Note: ref is only set to true in startPollinations onload (when Pollinations actually works)
             startPollinations('flux');
+            inProgressImages.current.delete(index);
         }
     };
 
@@ -261,6 +270,7 @@ export const useGameGen = (
         // RESET: each new adventure starts fresh — Gemini gets a clean first try
         isUsingPollinationsRef.current = false;
         setIsUsingPollinations(false);
+        inProgressImages.current.clear();
 
         setAppState('generating');
         setLoadingMessage('Conectando con la IA...');
