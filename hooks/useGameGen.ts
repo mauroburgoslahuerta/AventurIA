@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { generateAdventure } from '../services/aiService';
 import { checkDailyQuota, incrementDailyQuota } from '../utils';
 import { supabase } from '../supabaseClient';
@@ -18,6 +18,8 @@ export const useGameGen = (
     const [isRegeneratingImage, setIsRegeneratingImage] = useState(false);
     const [imgError, setImgError] = useState(false);
     const [isUsingPollinations, setIsUsingPollinations] = useState(false);
+    // Ref to avoid stale closure bug: async functions always read the current value
+    const isUsingPollinationsRef = useRef(false);
 
     /* 
      * 🔒 BLINDAJE: TRIPLE FALLBACK DE IMÁGENES (CRÍTICO)
@@ -43,7 +45,7 @@ export const useGameGen = (
                 img.src = url;
                 img.onload = () => {
                     clearTimeout(safetyTimeout);
-                    if (!isRegen) setIsUsingPollinations(true);
+                    if (!isRegen) { setIsUsingPollinations(true); isUsingPollinationsRef.current = true; }
                     resolve(url);
                 };
                 img.onerror = () => {
@@ -60,7 +62,7 @@ export const useGameGen = (
                 };
             };
 
-            if (isRegen || isUsingPollinations) {
+            if (isRegen || isUsingPollinationsRef.current) {
                 attemptPollinations('flux');
                 return;
             }
@@ -114,12 +116,17 @@ export const useGameGen = (
                     incrementDailyQuota();
                     resolve(imgUrl);
                 };
-                img.onerror = () => { throw new Error("Gemini blob failed load"); };
+                // FIX: was throwing inside async callback (uncaught) → Promise hung forever
+                // Now correctly falls back to Pollinations
+                img.onerror = () => {
+                    console.warn("Gemini image data failed to load, switching to Pollinations...");
+                    // Note: ref is only set to true in attemptPollinations onload (when Pollinations actually works)
+                    attemptPollinations('flux');
+                };
 
             } catch (geminiError) {
-                console.error("Gemini 2.5 Flash Preview failed. Switching to Pollinations. Reason:", geminiError);
-                // showToast("⚠️ Fallo en Gemini. Usando Pollinations.");
-                setIsUsingPollinations(true);
+                console.error("Gemini image failed. Switching to Pollinations. Reason:", geminiError);
+                // Note: ref is only set to true in attemptPollinations onload (when Pollinations actually works)
                 attemptPollinations('flux');
             }
         });
@@ -166,7 +173,7 @@ export const useGameGen = (
                 setQuestions(prev => prev.map((q, i) => i === index ? { ...q, imageData: url } : q));
                 setIsImageReady(true);
                 setIsRegeneratingImage(false);
-                if (!isRegeneratingImage) setIsUsingPollinations(true);
+                if (!isRegeneratingImage) { setIsUsingPollinations(true); isUsingPollinationsRef.current = true; }
             };
             img.onerror = () => {
                 clearTimeout(safetyTimeout);
@@ -187,7 +194,7 @@ export const useGameGen = (
 
         // LOGIC: If regenerating OR already flagging quota exceeded, skip Gemini.
         // 'forceRegen' parameter ensures we don't rely on async state 'isRegeneratingImage' exclusively.
-        if (forceRegen || isRegeneratingImage || isUsingPollinations) {
+        if (forceRegen || isRegeneratingImage || isUsingPollinationsRef.current) {
             startPollinations('flux');
             return;
         }
@@ -233,9 +240,8 @@ export const useGameGen = (
             incrementDailyQuota();
 
         } catch (e) {
-            console.warn("Gemini 2.5 failed, switching to Pollinations...", e);
-            // showToast("⚠️ Fallo en Gemini. Usando Pollinations.");
-            setIsUsingPollinations(true);
+            console.warn("Gemini image failed, switching to Pollinations...", e);
+            // Note: ref is only set to true in startPollinations onload (when Pollinations actually works)
             startPollinations('flux');
         }
     };
@@ -250,6 +256,11 @@ export const useGameGen = (
 
     const generateGame = async (config: GameConfig, setNormalizedTopic: (t: string) => void, setNormalizedAudience: (a: string) => void) => {
         if (!config.topic || !config.audience) return;
+
+        // RESET: each new adventure starts fresh — Gemini gets a clean first try
+        isUsingPollinationsRef.current = false;
+        setIsUsingPollinations(false);
+
         setAppState('generating');
         setLoadingMessage('Conectando con la IA...');
         setIsCreatorMode(true);
