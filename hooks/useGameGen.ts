@@ -194,6 +194,7 @@ export const useGameGen = (
 
         // LOGIC: If regenerating OR already flagging quota exceeded, skip Gemini.
         // 'forceRegen' parameter ensures we don't rely on async state 'isRegeneratingImage' exclusively.
+        console.log(`[IMG-DIAG Q${index}] forceRegen=${forceRegen} | isRegen=${isRegeneratingImage} | pollinationsRef=${isUsingPollinationsRef.current}`);
         if (forceRegen || isRegeneratingImage || isUsingPollinationsRef.current) {
             startPollinations('flux');
             return;
