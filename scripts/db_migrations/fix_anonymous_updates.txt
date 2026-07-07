@@ -1,0 +1,14 @@
+-- FIX ANONYMOUS UPDATES
+-- Run this in Supabase SQL Editor.
+
+-- 1. Allow 'anon' users to UPDATE adventures that have NO owner (user_id is NULL)
+-- This allows guests to save the implementation of the images generated in the background.
+
+CREATE POLICY "Enable update for anon on ownerless"
+ON public.adventures
+FOR UPDATE
+USING (user_id IS NULL)
+WITH CHECK (user_id IS NULL);
+
+-- Ensure permissions are reload
+NOTIFY pgrst, 'reload schema';

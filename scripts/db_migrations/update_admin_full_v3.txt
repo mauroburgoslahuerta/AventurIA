@@ -1,0 +1,108 @@
+
+-- V3: Admin Dashboard Complete (Users, Logs, Stats)
+-- Ejecuta este script COMPLETO en el SQL Editor de Supabase.
+
+-- 1. TABLA DE LOGS DE SISTEMA
+create table if not exists public.system_logs (
+    id uuid default gen_random_uuid() primary key,
+    severity text not null check (severity in ('info', 'warning', 'error')),
+    component text not null, -- 'image_gen', 'game_gen', 'auth', etc.
+    message text not null,
+    details jsonb,
+    created_at timestamptz default now()
+);
+
+-- Habilitar RLS
+alter table public.system_logs enable row level security;
+
+-- Política: Cualquiera puede INSERTAR logs (para reportar errores desde el cliente)
+create policy "Enable insert for all" on public.system_logs for insert with check (true);
+
+-- Política: Solo Admin puede LEER (Asumimos que el backend filtra, o usamos RPC)
+create policy "Enable read for all" on public.system_logs for select using (true); 
+-- Nota: En un entorno estricto restringiríamos SELECT, pero para este dashboard usamos la misma lógica de "frontend gate".
+
+
+-- 2. FUNCIÓN: Obtener lista de usuarios con métricas
+create or replace function get_admin_users_list()
+returns table (
+  id uuid,
+  email text,
+  last_sign_in_at timestamptz,
+  created_at timestamptz,
+  adventure_count bigint,
+  total_play_count bigint
+) 
+language plpgsql
+security definer
+as $$
+begin
+  return query
+  select 
+    u.id,
+    u.email::text,
+    u.last_sign_in_at,
+    u.created_at,
+    count(distinct a.id) as adventure_count,
+    coalesce(sum(a.play_count), 0) as total_play_count
+  from auth.users u
+  left join public.adventures a on a.user_id = u.id
+  group by u.id, u.email, u.last_sign_in_at, u.created_at;
+end;
+$$;
+
+-- 3. FUNCIÓN: Borrar usuario y datos
+create or replace function delete_user_by_id(target_user_id uuid)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  delete from public.adventures where user_id = target_user_id;
+  delete from auth.users where id = target_user_id;
+end;
+$$;
+
+-- 4. FUNCIÓN: Estadísticas Diarias de Usuarios
+create or replace function get_daily_user_stats()
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  total_users int;
+  new_users_today int;
+begin
+  select count(*) into total_users from auth.users;
+  select count(*) into new_users_today from auth.users where created_at >= current_date::timestamp;
+  return json_build_object('total_users', total_users, 'new_users_today', new_users_today);
+end;
+$$;
+
+-- 5. FUNCIÓN: Obtener Logs recientes
+create or replace function get_recent_logs(limit_count int default 50)
+returns table (
+    id uuid,
+    severity text,
+    component text,
+    message text,
+    created_at timestamptz
+)
+language plpgsql
+security definer
+as $$
+begin
+  return query
+  select l.id, l.severity, l.component, l.message, l.created_at
+  from public.system_logs l
+  order by l.created_at desc
+  limit limit_count;
+end;
+$$;
+
+-- PERMISOS
+grant execute on function get_admin_users_list to anon, authenticated, service_role;
+grant execute on function delete_user_by_id to anon, authenticated, service_role;
+grant execute on function get_daily_user_stats to anon, authenticated, service_role;
+grant execute on function get_recent_logs to anon, authenticated, service_role;
+grant all on public.system_logs to anon, authenticated, service_role;

@@ -1,0 +1,35 @@
+-- FIX ADVENTURES SHARING VISIBILITY
+-- Copia esto en Supabase SQL Editor y ejecuta.
+
+-- 1. Habilitar seguridad (si no lo estaba)
+ALTER TABLE public.adventures ENABLE ROW LEVEL SECURITY;
+
+-- 2. PERMITIR LECTURA PÚBLICA (Para que funcionen los enlaces compartidos)
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.adventures;
+CREATE POLICY "Enable read access for all users"
+ON public.adventures
+FOR SELECT
+USING (true);
+
+-- 3. PERMITIR CREAR AVENTURAS PÚBLICAS (Insertar)
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.adventures;
+CREATE POLICY "Enable insert for all users"
+ON public.adventures
+FOR INSERT
+WITH CHECK (true);
+
+-- 4. PERMITIR ACTUALIZAR (Solo el creador - NECESARIO para guardar ediciones al compartir)
+DROP POLICY IF EXISTS "Enable update for users based on user_id" ON public.adventures;
+CREATE POLICY "Enable update for users based on user_id"
+ON public.adventures
+FOR UPDATE
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
+
+-- 5. Dar permisos a roles anónimos (para gente que abre el enlace sin login)
+GRANT ALL ON public.adventures TO anon;
+GRANT ALL ON public.adventures TO authenticated;
+GRANT ALL ON public.adventures TO service_role;
+
+-- 6. Recargar cache
+NOTIFY pgrst, 'reload schema';

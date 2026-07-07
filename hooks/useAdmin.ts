@@ -55,7 +55,7 @@ export const useAdmin = () => {
             .from('daily_stats')
             .select('image_count')
             .eq('date', today)
-            .single();
+            .maybeSingle();
         setGoogleImageCount(stats?.image_count || 0);
 
         setAdminLoading(false);

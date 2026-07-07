@@ -198,8 +198,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500/50">Visual Prompt (Sin spoilers)</label>
                                     <div className="flex gap-3">
                                         <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-bold" value={questions[currentQIndex].visualPrompt} onChange={e => setQuestions(prev => prev.map((q, idx) => idx === currentQIndex ? { ...q, visualPrompt: e.target.value } : q))} />
-                                        <button onClick={handleRegenerateImage} disabled={isRegeneratingImage} className="bg-cyan-500 px-6 rounded-2xl text-slate-900 font-black text-[10px] uppercase tracking-widest hover:bg-cyan-400 transition-all shrink-0">
-                                            {isRegeneratingImage ? <i className="fa-solid fa-spinner animate-spin"></i> : "Regenerar"}
+                                        <button disabled title="Regeneración no disponible temporalmente" className="bg-white/5 border border-white/10 px-6 rounded-2xl text-white/20 font-black text-[10px] uppercase tracking-widest cursor-not-allowed shrink-0 flex items-center gap-2">
+                                            <i className="fa-solid fa-ban"></i> Regen
                                         </button>
                                     </div>
                                 </div>

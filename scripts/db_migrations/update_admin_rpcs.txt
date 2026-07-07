@@ -1,0 +1,54 @@
+
+-- Function 1: Get Global User Stats (Total & New Today)
+-- Security: DEFINER ensures it runs with permissions to read auth.users
+create or replace function get_daily_user_stats()
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  total_users int;
+  new_users_today int;
+begin
+  select count(*) into total_users from auth.users;
+  
+  select count(*) into new_users_today 
+  from auth.users 
+  where created_at >= current_date::timestamp;
+  
+  return json_build_object(
+    'total_users', total_users,
+    'new_users_today', new_users_today
+  );
+end;
+$$;
+
+-- Function 2: Get Specific User Details for Admin
+-- Security: DEFINER to read email/last_sign_in
+create or replace function get_admin_user_details(target_user_id uuid)
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  u_email text;
+  u_last_login timestamptz;
+  u_created_at timestamptz;
+begin
+  select email, last_sign_in_at, created_at 
+  into u_email, u_last_login, u_created_at
+  from auth.users
+  where id = target_user_id;
+  
+  return json_build_object(
+    'email', u_email,
+    'last_sign_in_at', u_last_login,
+    'created_at', u_created_at
+  );
+end;
+$$;
+
+-- Grant access to anon/authenticated (Application Logic handles the Admin Password check on frontend, 
+-- but ideally this should be restricted. For this app, we rely on the obscurity of the endpoint and frontend gate)
+grant execute on function get_daily_user_stats to anon, authenticated, service_role;
+grant execute on function get_admin_user_details to anon, authenticated, service_role;

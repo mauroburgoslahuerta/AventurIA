@@ -1,0 +1,15 @@
+-- Enable RLS on game_sessions (if not already)
+ALTER TABLE game_sessions ENABLE ROW LEVEL SECURITY;
+
+-- 1. Allow Public Read Access (Required to check if alias exists)
+DROP POLICY IF EXISTS "Public Read Sessions" ON game_sessions;
+CREATE POLICY "Public Read Sessions"
+ON game_sessions FOR SELECT
+USING (true);
+
+-- 2. Allow Public Update Access (Required to update best score)
+DROP POLICY IF EXISTS "Public Update Sessions" ON game_sessions;
+CREATE POLICY "Public Update Sessions"
+ON game_sessions FOR UPDATE
+USING (true)
+WITH CHECK (true);

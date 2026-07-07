@@ -1,0 +1,60 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production
+dist
+dist-ssr
+build
+
+# Misc
+.DS_Store
+*.pem
+
+# Versions
+*.local
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.shredder
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project specifics (debug scripts and temporary data)
+debug_*.js
+ai_b64.txt
+mauro_b64.txt
+mauro_logo.txt
+temp_*.js
+*.sql
+inject_footer.py
+convert_mauro_logo.py
+embed_logo.py
+models_list.txt
+models_debug.json
+debug_images.html
+list_models.js
+list_models_file.js
+verify_current_logic.js
+.vercel

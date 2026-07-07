@@ -1,0 +1,53 @@
+-- FIX: PUBLIC SHARING & GUEST UPLOADS
+-- Run this script in the Supabase SQL Editor to fix the 500 Error for guests.
+
+BEGIN;
+
+-- 1. Ensure 'user_id' is NULLABLE in 'adventures' table
+-- This is critical for guest users (who have no user_id).
+ALTER TABLE public.adventures ALTER COLUMN user_id DROP NOT NULL;
+
+-- 2. Update RLS Policies for 'adventures'
+-- Allow anyone (anon) to INSERT adventures.
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.adventures;
+CREATE POLICY "Enable insert for all users"
+ON public.adventures
+FOR INSERT
+WITH CHECK (true);
+
+-- Allow anyone to READ adventures (already likely set, but reinforcing).
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.adventures;
+CREATE POLICY "Enable read access for all users"
+ON public.adventures
+FOR SELECT
+USING (true);
+
+-- 3. STORAGE PERMISSIONS (Critical for Image Uploads)
+-- Allow 'anon' users to upload to 'adventure_images' bucket.
+
+-- Policy for INSERT (Upload)
+DROP POLICY IF EXISTS "Allow public uploads" ON storage.objects;
+CREATE POLICY "Allow public uploads"
+ON storage.objects
+FOR INSERT
+WITH CHECK (
+    bucket_id = 'adventure_images' 
+    AND (auth.role() = 'anon' OR auth.role() = 'authenticated')
+);
+
+-- Policy for SELECT (View Images)
+DROP POLICY IF EXISTS "Allow public viewing" ON storage.objects;
+CREATE POLICY "Allow public viewing"
+ON storage.objects
+FOR SELECT
+USING (bucket_id = 'adventure_images');
+
+-- 4. GRANT PERMISSIONS
+GRANT ALL ON public.adventures TO anon;
+GRANT ALL ON public.adventures TO authenticated;
+GRANT ALL ON public.adventures TO service_role;
+
+COMMIT;
+
+-- Force schema reload
+NOTIFY pgrst, 'reload schema';

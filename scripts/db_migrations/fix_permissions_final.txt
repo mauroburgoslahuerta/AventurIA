@@ -1,0 +1,59 @@
+-- FIX PERMISSIONS FINAL (No-Transaction Mode)
+-- Run this in Supabase SQL Editor.
+-- We run statements individually so if one fails, the others still try to apply.
+
+-- 1. Make user_id optional (for guests)
+ALTER TABLE public.adventures ALTER COLUMN user_id DROP NOT NULL;
+
+-- 2. ADVENTURES TABLE POLICIES -------------------------
+
+-- Drop potential conflicting policies
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.adventures;
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.adventures;
+-- Tries to drop the authenticated one if it exists to replace it? 
+-- No, we keep the authenticated one if it's there, but we add the public one.
+-- Supabase uses OR logic, so adding a public one is enough.
+
+-- Allow Public Read
+CREATE POLICY "Enable read access for all users"
+ON public.adventures FOR SELECT
+USING (true);
+
+-- Allow Public Insert
+CREATE POLICY "Enable insert for all users"
+ON public.adventures FOR INSERT
+WITH CHECK (true);
+
+-- Grant permissions to roles
+GRANT ALL ON public.adventures TO anon;
+GRANT ALL ON public.adventures TO authenticated;
+GRANT ALL ON public.adventures TO service_role;
+
+
+-- 3. STORAGE POLICIES (Images) -------------------------
+
+-- Drop old policies to act clean
+DROP POLICY IF EXISTS "Allow public uploads" ON storage.objects;
+DROP POLICY IF EXISTS "Allow public viewing" ON storage.objects;
+DROP POLICY IF EXISTS "Give anon access" ON storage.objects;
+
+-- Allow Public Viewing of Images
+CREATE POLICY "Allow public viewing"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'adventure_images');
+
+-- Allow Public Uploads (Guest + Auth)
+CREATE POLICY "Allow public uploads"
+ON storage.objects FOR INSERT
+WITH CHECK (
+    bucket_id = 'adventure_images'
+);
+
+-- Note: We assume the bucket 'adventure_images' exists.
+-- If not, create it manually or via script:
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('adventure_images', 'adventure_images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Reload schema cache
+NOTIFY pgrst, 'reload schema';

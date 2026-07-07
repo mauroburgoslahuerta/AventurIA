@@ -49,7 +49,7 @@ export const checkDailyQuota = async (): Promise<boolean> => {
             .from('daily_stats')
             .select('image_count')
             .eq('date', today)
-            .single();
+            .maybeSingle();
 
         if (error) {
             // If code is PGRST116, it means no row exists for today (count = 0), so quota is OK.
@@ -58,7 +58,7 @@ export const checkDailyQuota = async (): Promise<boolean> => {
             return true; // Fail open (allow generation) on DB error
         }
 
-        return (data?.image_count || 0) < 800; // LIMIT 800
+        return (data?.image_count || 0) < 150; // LIMIT 150 (cost control)
     } catch (e) {
         return true;
     }

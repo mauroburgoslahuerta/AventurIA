@@ -1,0 +1,64 @@
+-- RESTAURAR VISIBILIDAD (Nuclear Option)
+-- Ejecuta esto en el SQL Editor de Supabase para arreglar que no aparezcan las aventuras.
+
+-- 1. Limpieza de Políticas Antiguas (Para evitar conflictos)
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.adventures;
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.adventures;
+DROP POLICY IF EXISTS "Enable update for users based on user_id" ON public.adventures;
+DROP POLICY IF EXISTS "Enable delete for users based on user_id" ON public.adventures;
+-- Nombres comunes por si acaso
+DROP POLICY IF EXISTS "Public read access" ON public.adventures;
+DROP POLICY IF EXISTS "Authenticated users can select" ON public.adventures;
+-- Limpieza de políticas creadas recientemente (FIX ERROR 42710)
+DROP POLICY IF EXISTS "Public Read" ON public.adventures;
+DROP POLICY IF EXISTS "Public Insert" ON public.adventures;
+DROP POLICY IF EXISTS "Owner Update" ON public.adventures;
+DROP POLICY IF EXISTS "Owner Delete" ON public.adventures;
+DROP POLICY IF EXISTS "Public Update" ON public.adventures;
+DROP POLICY IF EXISTS "Public Delete" ON public.adventures;
+
+-- 2. ACTIVAR RLS (Por seguridad básica)
+ALTER TABLE public.adventures ENABLE ROW LEVEL SECURITY;
+
+-- 3. POLÍTICA DE LECTURA: PÚBLICA TOTAL
+-- Esto arregla el Admin Dashboard y que se vean las aventuras de otros.
+CREATE POLICY "Public Read"
+ON public.adventures FOR SELECT
+USING (true);
+
+-- 4. POLÍTICA DE CREACIÓN: PÚBLICA (Invitados y Registrados)
+CREATE POLICY "Public Insert"
+ON public.adventures FOR INSERT
+WITH CHECK (true);
+
+-- 5. POLÍTICA DE ACTUALIZACIÓN: PÚBLICA (Para que el Admin pueda editar)
+-- Advertencia: Esto permite que cualquiera que sepa interactuar con Supabase edite aventuras.
+-- En Beta es aceptable, para Prod requeriría Backend.
+CREATE POLICY "Public Update"
+ON public.adventures FOR UPDATE
+USING (true);
+
+-- 6. POLÍTICA DE BORRADO: PÚBLICA (Para que el Admin pueda borrar)
+-- Permite borrar aventuras.
+CREATE POLICY "Public Delete"
+ON public.adventures FOR DELETE
+USING (true);
+
+-- 7. REFRESCAR PERMISOS
+GRANT ALL ON public.adventures TO anon;
+GRANT ALL ON public.adventures TO authenticated;
+GRANT ALL ON public.adventures TO service_role;
+
+-- 8. BONUS: Asegurar borrado en cascada (Evita errores de FK si hay partidas guardadas)
+-- Intentamos modificar la constraint para que sea CASCADE.
+-- (Si falla porque el nombre es distinto, no pasa nada, el RLS es lo principal).
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'game_sessions_adventure_id_fkey') THEN
+    ALTER TABLE public.game_sessions DROP CONSTRAINT game_sessions_adventure_id_fkey;
+    ALTER TABLE public.game_sessions ADD CONSTRAINT game_sessions_adventure_id_fkey FOREIGN KEY (adventure_id) REFERENCES public.adventures(id) ON DELETE CASCADE;
+  END IF;
+END $$;
+
+
+NOTIFY pgrst, 'reload schema';

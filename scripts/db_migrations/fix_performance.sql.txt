@@ -1,0 +1,16 @@
+-- FIX RENDIMIENTO AL BORRAR
+-- El error "statement timeout" ocurre porque la base de datos tarda demasiado en buscar
+-- todas las partidas asociadas a la aventura para borrarlas.
+-- Este índice soluciona el problema haciendo la búsqueda instantánea.
+
+-- 1. Crear índice en la tabla de sesiones (CRÍTICO)
+CREATE INDEX IF NOT EXISTS idx_game_sessions_adventure_id ON public.game_sessions(adventure_id);
+
+-- 2. Asegurar borrado en cascada (Redundancia de seguridad)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'game_sessions_adventure_id_fkey') THEN
+    ALTER TABLE public.game_sessions DROP CONSTRAINT game_sessions_adventure_id_fkey;
+    ALTER TABLE public.game_sessions ADD CONSTRAINT game_sessions_adventure_id_fkey FOREIGN KEY (adventure_id) REFERENCES public.adventures(id) ON DELETE CASCADE;
+  END IF;
+END $$;

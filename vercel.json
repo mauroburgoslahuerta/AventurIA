@@ -3,10 +3,6 @@
         {
             "source": "/pollinations/:path*",
             "destination": "https://image.pollinations.ai/:path*"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
         }
     ]
 }
