@@ -19,8 +19,8 @@ El sistema está construido sobre pilares pedagógicos sólidos:
 AventurIA es una aplicación **Fullstack Serverless** en producción, diseñada para ser resiliente y altamente escalable:
 - **Frontend:** React 19 + TypeScript + Vite. Interfaz moderna y dinámica utilizando Tailwind CSS y Framer Motion (diseño adaptativo y glassmorphism).
 - **Backend / BaaS:** Supabase (PostgreSQL, Auth, Storage).
-- **Seguridad y Permisos:** Políticas de acceso RLS (Row Level Security) robustas. Arquitectura "Guest-First" que permite a usuarios anónimos interactuar y generar datos con total seguridad, apoyándose en conversiones *Soft Wall*.
-- **Motor de IA Generativa:** Integración asíncrona con Google Gemini 2.0 / 2.5 Flash y un sofisticado sistema de **Fallback Triple** para la generación de recursos visuales (Gemini -> Pollinations Flux -> Pollinations Turbo) garantizando tiempos de respuesta ultrarrápidos y alta disponibilidad.
+- **Seguridad y Permisos:** Arquitectura "Guest-First": los usuarios invitados pueden interactuar y guardar progreso sin necesidad de crear cuenta, con el acceso a los datos resuelto a nivel de base de datos (Row Level Security de Supabase).
+- **Motor de IA Generativa:** Integración con Google Gemini 2.0 / 2.5 Flash para la generación de contenido, con un sistema de fallback en cascada entre proveedores (Gemini -> Pollinations Flux -> Pollinations Turbo) para minimizar tiempos de espera y caídas de servicio.
 
 ## 🗺️ Roadmap de Negocio y Escalabilidad
 El desarrollo actual evoluciona desde un producto funcional hacia un modelo SaaS sostenible:
@@ -44,4 +44,4 @@ npm run dev
 ```
 
 ---
-*Construido uniendo la pedagogía de la enseñanza tradicional con la ingeniería de software moderna.*
+*Construido uniendo el criterio pedagógico con la orquestación de tecnología moderna (IA generativa + arquitectura serverless).*
