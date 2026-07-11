@@ -24,7 +24,7 @@ export const useGameState = (
         count: 5,
         timerSeconds: 30, // Default 30s
         difficulty: 'medium',
-        mode: 'ai'
+        mode: 'stock'
     });
 
     const [questions, setQuestions] = useState<Question[]>([]);

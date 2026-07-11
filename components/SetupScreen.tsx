@@ -41,6 +41,12 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     const [showFeaturedSheet, setShowFeaturedSheet] = React.useState(false);
     const dragControls = useDragControls();
 
+    React.useEffect(() => {
+        if (!user && config.mode === 'ai') {
+            setConfig({ ...config, mode: 'stock' });
+        }
+    }, [user, config.mode]);
+
     const onDragEnd = (event: any, info: PanInfo) => {
         if (info.offset.y > 100 || info.velocity.y > 500) {
             setShowFeaturedSheet(false);

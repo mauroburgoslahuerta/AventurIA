@@ -140,12 +140,16 @@ serve(async (req) => {
           }
         ]
       }`;
+            const reqOrigin = req.headers.get('Origin') || req.headers.get('Referer') || 'http://localhost:5173';
 
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Referer': reqOrigin
+                    },
                     body: JSON.stringify({
                         contents: [{ role: 'user', parts: [{ text: prompt }] }],
                         generationConfig: { response_mime_type: "application/json" }
@@ -203,10 +207,13 @@ serve(async (req) => {
                     if (actualMode === 'ai') {
                         try {
                             const imgRes = await fetch(
-                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`,
+                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
                                 {
                                     method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
+                                    headers: { 
+                                        'Content-Type': 'application/json',
+                                        'Referer': reqOrigin
+                                    },
                                     body: JSON.stringify({
                                         contents: [{ parts: [{ text: q.visualPrompt || q.stockKeyword || 'educational illustration' }] }]
                                     })
@@ -260,11 +267,15 @@ serve(async (req) => {
         if (action === 'generate_image') {
             if (!imagePrompt) throw new Error("Missing 'prompt' for image generation.");
 
+            const reqOrigin = req.headers.get('Origin') || req.headers.get('Referer') || 'http://localhost:5173';
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Referer': reqOrigin
+                    },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: imagePrompt }] }]
                     })
