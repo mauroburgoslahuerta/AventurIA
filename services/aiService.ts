@@ -29,7 +29,7 @@ export const generateAdventure = async (config: GameConfig, setProgress?: (progr
                 audience: config.audience,
                 count: config.count,
                 difficulty: config.difficulty,
-                mode: 'ai'
+                mode: config.mode || 'ai'
             }
         });
 

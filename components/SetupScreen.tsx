@@ -37,6 +37,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     };
 
     const [showLoginNudge, setShowLoginNudge] = React.useState(false);
+    const [showPremiumModal, setShowPremiumModal] = React.useState(false);
     const [showFeaturedSheet, setShowFeaturedSheet] = React.useState(false);
     const dragControls = useDragControls();
 
@@ -149,25 +150,66 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
                         <div className="flex flex-col gap-5 w-full">
 
-                            {/* FILA SUPERIOR: Nº RETOS */}
-                            <div className="w-full space-y-1">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1 block">Nº de Retos</label>
-                                <div className="bg-white/[0.02] rounded-xl p-2 border border-white/5 relative overflow-hidden flex flex-col justify-center hover:border-white/10 transition-all">
-                                    <div className="grid grid-cols-5 gap-1 w-full">
-                                        {[5, 10, 15, 25, 50].map((n) => {
-                                            const isAvailable = n === 5 || n === 10;
-                                            return (
-                                                <button
-                                                    key={n}
-                                                    disabled={!isAvailable}
-                                                    onClick={() => isAvailable && setConfig({ ...config, count: n })}
-                                                    className={`relative py-3 rounded-lg text-[9px] font-black transition-all flex items-center justify-center ${config.count === n ? 'bg-cyan-500 text-slate-900 shadow-[0_0_15px_rgba(0,229,255,0.3)] scale-[1.02] z-10' : isAvailable ? 'text-white/40 hover:text-white hover:bg-white/5 bg-white/[0.02]' : 'text-white/5 cursor-not-allowed bg-black/20'}`}
-                                                >
-                                                    <span>{n}</span>
-                                                    {!isAvailable && <i className="fa-solid fa-lock text-[6px] absolute top-0.5 right-0.5 opacity-50"></i>}
-                                                </button>
-                                            );
-                                        })}
+                            {/* FILA SUPERIOR: Nº RETOS Y MODO VISUAL */}
+                            <div className="grid grid-cols-2 gap-4 w-full">
+                                {/* Nº RETOS */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1 block">Nº de Retos</label>
+                                    <div className="bg-white/[0.02] rounded-xl p-2 border border-white/5 relative overflow-hidden flex flex-col justify-center hover:border-white/10 transition-all">
+                                        <div className="grid grid-cols-3 gap-1 w-full">
+                                            {[5, 10, 15].map((n) => {
+                                                const isAvailable = n === 5 || n === 10;
+                                                return (
+                                                    <button
+                                                        key={n}
+                                                        disabled={!isAvailable}
+                                                        onClick={() => isAvailable && setConfig({ ...config, count: n })}
+                                                        className={`relative py-3 rounded-lg text-[9px] font-black transition-all flex items-center justify-center ${config.count === n ? 'bg-cyan-500 text-slate-900 shadow-[0_0_15px_rgba(0,229,255,0.3)] scale-[1.02] z-10' : isAvailable ? 'text-white/40 hover:text-white hover:bg-white/5 bg-white/[0.02]' : 'text-white/5 cursor-not-allowed bg-black/20'}`}
+                                                    >
+                                                        <span>{n}</span>
+                                                        {!isAvailable && <i className="fa-solid fa-lock text-[6px] absolute top-0.5 right-0.5 opacity-50"></i>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* MODO VISUAL */}
+                                <div className="space-y-1 flex flex-col">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1 flex justify-between">
+                                        <span>Modo Visual</span>
+                                    </label>
+                                    <div className="bg-white/[0.02] rounded-xl p-2 border border-white/5 flex flex-col justify-center hover:border-white/10 transition-all flex-1">
+                                        <div className="flex gap-1 h-full">
+                                            <button
+                                                onClick={() => {
+                                                    if (!user) {
+                                                        setShowPremiumModal(true);
+                                                    } else {
+                                                        setConfig({ ...config, mode: 'ai' });
+                                                    }
+                                                }}
+                                                className={`flex-1 rounded-lg text-[8px] font-black transition-all flex flex-col items-center justify-center uppercase tracking-wider gap-0.5 ${config.mode === 'ai' ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
+                                            >
+                                                <i className="fa-solid fa-wand-magic-sparkles text-[10px] mb-0.5"></i>
+                                                <span>IA</span>
+                                            </button>
+                                            <button
+                                                onClick={() => setConfig({ ...config, mode: 'stock' })}
+                                                className={`flex-1 rounded-lg text-[8px] font-black transition-all flex flex-col items-center justify-center uppercase tracking-wider gap-0.5 ${config.mode === 'stock' ? 'bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
+                                            >
+                                                <i className="fa-solid fa-camera text-[10px] mb-0.5"></i>
+                                                <span>Archivo</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="text-right h-3 mt-1">
+                                        {config.mode === 'ai' ? (
+                                            <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest animate-fade-in">Coste: {config.count * 10} créditos</span>
+                                        ) : (
+                                            <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest animate-fade-in">Gratis</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -387,6 +429,50 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                     className="w-full py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
                                 >
                                     Continuar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- PREMIUM MODAL --- */}
+            {showPremiumModal && (
+                <div
+                    onClick={() => setShowPremiumModal(false)}
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-fade-in"
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[#0f172a] border border-purple-500/30 rounded-3xl p-8 max-w-sm w-full shadow-[0_0_50px_rgba(168,85,247,0.15)] relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-cyan-500"></div>
+                        <div className="flex flex-col items-center text-center gap-4 relative z-10">
+                            <div className="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center mb-2 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+                                <i className="fa-solid fa-wand-magic-sparkles text-3xl text-purple-400"></i>
+                            </div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-wide">Funcionalidad Premium</h3>
+                            <p className="text-sm text-white/70 leading-relaxed font-medium">
+                                Necesitas registrarte para generar imágenes exclusivas por IA.
+                                <br/><br/>
+                                <span className="text-cyan-400 font-bold">¡Al crear tu cuenta recibirás 50 créditos gratis!</span>
+                            </p>
+
+                            <div className="flex flex-col gap-3 w-full mt-4">
+                                <button
+                                    onClick={() => {
+                                        setShowPremiumModal(false);
+                                        setShowAuthOverlay(true);
+                                    }}
+                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-black uppercase tracking-widest hover:shadow-lg hover:shadow-purple-500/25 transition-all hover:scale-[1.02]"
+                                >
+                                    Registrarse Gratis
+                                </button>
+                                <button
+                                    onClick={() => setShowPremiumModal(false)}
+                                    className="w-full py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
+                                >
+                                    Cerrar
                                 </button>
                             </div>
                         </div>

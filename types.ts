@@ -17,6 +17,7 @@ export interface GameConfig {
     count: number;
     timerSeconds: number;
     difficulty: string;
+    mode: 'ai' | 'stock';
 }
 
 export interface Adventure {
