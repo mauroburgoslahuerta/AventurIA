@@ -190,21 +190,21 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                                         setConfig({ ...config, mode: 'ai' });
                                                     }
                                                 }}
-                                                className={`flex-1 rounded-lg text-[8px] font-black transition-all flex flex-col items-center justify-center uppercase tracking-wider gap-0.5 ${config.mode === 'ai' ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
+                                                className={`flex-1 py-2 rounded-lg text-[9px] font-black transition-all flex items-center justify-center uppercase tracking-wider gap-1.5 whitespace-nowrap ${config.mode === 'ai' ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
                                             >
-                                                <i className="fa-solid fa-wand-magic-sparkles text-[10px] mb-0.5"></i>
+                                                <i className="fa-solid fa-wand-magic-sparkles text-[9px] opacity-80"></i>
                                                 <span>IA</span>
                                             </button>
                                             <button
                                                 onClick={() => setConfig({ ...config, mode: 'stock' })}
-                                                className={`flex-1 rounded-lg text-[8px] font-black transition-all flex flex-col items-center justify-center uppercase tracking-wider gap-0.5 ${config.mode === 'stock' ? 'bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
+                                                className={`flex-1 py-2 rounded-lg text-[9px] font-black transition-all flex items-center justify-center uppercase tracking-wider gap-1.5 whitespace-nowrap ${config.mode === 'stock' ? 'bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
                                             >
-                                                <i className="fa-solid fa-camera text-[10px] mb-0.5"></i>
+                                                <i className="fa-solid fa-camera text-[9px] opacity-80"></i>
                                                 <span>Archivo</span>
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="text-right h-3 mt-1">
+                                    <div className="text-center h-3 mt-1">
                                         {config.mode === 'ai' ? (
                                             <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest animate-fade-in">Coste: {config.count * 10} créditos</span>
                                         ) : (
