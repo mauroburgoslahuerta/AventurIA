@@ -46,16 +46,23 @@ export async function spendCredits(
 }
 
 /**
- * Función preparada para devolver créditos si el proceso de IA falla posteriormente.
- * (Cumple el requerimiento del 'Doble Fallback').
+ * Ejecuta un reembolso devolviendo créditos al usuario si el proceso de IA falla.
+ * Requiere que la función RPC 'refund_credits' esté en la base de datos.
  */
 export async function refundCredits(
   supabase: SupabaseClient,
   transactionId: string,
   amount: number
 ): Promise<void> {
-  // Esta función queda preparada como interfaz inicial para la siguiente etapa de fallbacks.
-  // Ej: await supabase.rpc('refund_credits', { p_transaction_id: transactionId, p_amount: amount })
-  console.warn(`Refund function called but not yet implemented in DB. TxtID: ${transactionId}`);
-  throw new Error("refundCredits Not implemented yet in database layer");
+  const { error } = await supabase.rpc('refund_credits', {
+    p_transaction_id: transactionId,
+    p_amount: amount
+  });
+
+  if (error) {
+    console.error(`[Wallet] Database error in refund_credits (TxID: ${transactionId}):`, error);
+    throw new Error(`Refund Error: ${error.message}`);
+  }
+  
+  console.log(`[Wallet] Successfully refunded ${amount} credits for transaction ${transactionId}.`);
 }
