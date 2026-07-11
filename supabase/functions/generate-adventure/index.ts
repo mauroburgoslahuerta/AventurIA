@@ -235,7 +235,7 @@ serve(async (req) => {
                         
                         // 3.C FALLBACK 2 (Imagen Local) si Pexels también falla
                         if (!imgUrl) {
-                            imgUrl = '/assets/fallback.jpg'; // Asegúrate de que esta imagen exista en /public
+                            imgUrl = '/assets/fallback.png';
                         }
                     }
 
