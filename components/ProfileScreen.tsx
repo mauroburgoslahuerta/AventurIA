@@ -220,7 +220,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, setAppState,
                                         <tbody className="text-xs font-bold text-white/80">
                                             {(() => {
                                                 const currentAdv = adventures.find(a => a.id === selectedAdventureId);
-                                                const qCount = currentAdv?.questions?.length || 0;
+                                                const qCount = currentAdv?.config?.count || 0;
 
                                                 const sortedData = [...adventureSessions].sort((a, b) => {
                                                     let valA = a[modalSortConfig.key];
