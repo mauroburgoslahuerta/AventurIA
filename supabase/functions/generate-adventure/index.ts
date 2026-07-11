@@ -105,27 +105,35 @@ serve(async (req) => {
       2. Las preguntas deben ser educativas y curiosas.
       3. Asegura que los datos sean correctos.
       4. Dificultad seleccionada: ${configDifficulty}. Define la complejidad así:
-         - FÁCIL: Nivel "Recordar/Comprender". Preguntas directas, opciones incorrectas obvias.
+         - FÁCIL: Nivel "Recordar/Comprender" (Taxonomía de Bloom). Preguntas directas, conceptos básicos, opciones incorrectas obvias.
          - MEDIO: Nivel "Aplicar/Analizar". Requiere relacionar conceptos. Las opciones incorrectas son plausibles ("distractores").
-         - DIFÍCIL: Nivel "Evaluar/Crear". Requiere pensamiento lateral o casos complejos.
-      
-      Requisitos de Seguridad y Adaptación Visual:
-      1. CORRECCIÓN INTELIGENTE: Corrige erratas o abreviaturas silenciosamente.
-      2. FILTRO ÉTICO: Temas inadecuados -> Reformula hacia una vertiente educativa estricta.
-      3. "visualPrompt": Describe una imagen para generar con IA (PAISAJE o ESCENA GENÉRICA sin spoilear las respuestas).
-      4. "stockKeyword": EXTRAE de la pregunta 1 o 2 palabras clave simples en INGLÉS (ej: "tiger", "volcano", "children learning"), optimizadas para buscar en Pexels.
+         - DIFÍCIL: Nivel "Evaluar/Crear". Requiere pensamiento lateral, excepciones a la regla o análisis de casos complejos. Muy desafiante.
 
+      Requisitos de Seguridad y Adaptación Visual:
+      1. CORRECCIÓN INTELIGENTE: Si el tema o la audiencia tienen erratas o abreviaturas (ej: "Dinasaurios" -> "Dinosaurios", "3 pim" -> "3º Primaria"), CORRÍGELAS silenciosamente e interpreta la intención correcta.
+      2. FILTRO ÉTICO (CRÍTICO):
+         - Temas FANTÁSTICOS/CREATIVOS (Zombies, Magia...): VÁLIDOS.
+         - Temas INADECUADOS (Violencia, insultos, explícito...): NO uses el bloqueo estándar. REFORMULA el tema hacia una vertiente educativa estricta (ej: "Violencia" -> "Resolución de Conflictos y Paz", "Robar" -> "Ética y Leyes", "Drogas" -> "Salud y Neurociencia"). ¡Dale la vuelta educativa!
+      3. "visualPrompt": Debe describir una imagen para generar con IA.
+         - IMPORTANTE: Define un ESTILO VISUAL adecuado para la audiencia (ej: "ilustración vectorial colorida estilo Pixar" para niños, "fotorealismo cinemático" para adultos).
+         - ANTI-SPOILER (CRÍTICO): Si la pregunta requiere identificar algo, describe un PAISAJE o ESCENA GENÉRICA. 
+         - PROHIBIDO: NO incluyas visualmente NINGUNA de las opciones de respuesta (ni correcta ni incorrectas). Por ejemplo, si las opciones son animales, NO dibujes ninguno de ellos. Dibuja su hábitat o comida.
+         - Asegura que la descripción sea "Safe For Work" y amable.
+      4. "stockKeyword": EXTRAE de la pregunta 1 o 2 palabras clave simples en INGLÉS optimizadas para buscar en Pexels.
+         - ANTI-SPOILER (CRÍTICO): Esta palabra clave NUNCA debe ser o contener la respuesta correcta. Debe ser un concepto general del entorno (ej: "jungle", "space", "laboratory").
+
+      Estructura del Juego:
       Formato JSON estricto:
       {
-        "correctedTopic": "Tema corregido y bien formateado",
-        "correctedAudience": "Audiencia corregida y formal",
+        "correctedTopic": "Tema corregido y bien formateado (ej: 'Dinosaurios' si puso 'dinasaurios')",
+        "correctedAudience": "Audiencia corregida y formal (ej: '3º Primaria' si puso '3 pim')",
         "questions": [
           {
             "id": 1,
             "question": "Pregunta...",
             "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-            "correctIndex": 0,
-            "visualPrompt": "Descripción detallada de la imagen para IA...",
+            "correctIndex": 0, // ¡IMPORTANTE!: Aleatoriza este índice (0-3) para cada pregunta. No pongas siempre la A.
+            "visualPrompt": "Descripción detallada de la imagen INCLUYENDO EL ESTILO VISUAL ADAPTADO...",
             "stockKeyword": "keyword in english",
             "hint": "Una pista útil...",
             "explanation": "Explicación breve de la respuesta correcta..."
