@@ -10,8 +10,9 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 
 ## Proposed Changes
 
-### 1. Esquema de Base de Datos y Atomicidad Real
-#### [NEW] `supabase/migrations/xxxx_create_profiles_and_wallet.sql`
+### 1. Esquema de Base de Datos y Atomicidad Real ✅ [COMPLETADO]
+#### [DONE] `scripts/db_migrations/20260708_create_profiles_and_wallet.sql`
+#### [DONE] `scripts/db_migrations/20260708_auth_triggers.sql`
 - **Tabla `profiles` y `credit_transactions`** (Misma estructura previa).
 - **Función Atómica (El Guardián Transaccional Completo):**
   ```sql
@@ -45,24 +46,28 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 
 ### 2. Lógica Backend (Motor Dual y Seguridad Transaccional)
 
+#### [NEW] `supabase/functions/_shared/wallet.ts` ✅ [COMPLETADO]
+- **El Guardián de TypeScript:** Módulo utilitario centralizado que encapsula la llamada al RPC `atomic_spend` y la estructura de `refundCredits`.
+- Maneja el coste dinámico y contiene la regla bloqueante de auditoría (captura el `null` y lanza `InsufficientFundsError`).
+- **⚠️ INSTRUCCIÓN PARA AGENTES:** Cualquier función nueva (como `generate-quiz` o `generate-image`) DEBE importar y usar la función `spendCredits` de este módulo. Prohibido reprogramar llamadas a `atomic_spend` o comprobaciones manuales de NULL.
+
 #### [MODIFY] `supabase/functions/generate-quiz/index.ts`
-- **Fallo Parcial y Check Atómico Estricto:**
-  1. Input: `{ mode: 'ai', num_questions: 5 }`.
-  2. Ejecuta RPC `transaction_id = atomic_spend(user_id, 50, adventure_id, 'generation')`. 
-  3. **Check en código:** `if (!transaction_id) { throw new Error('402: Insufficient funds'); }`.
+- **Fallo Parcial y Check Atómico Estricto (Usando Guardián):**
+  1. Input: `{ mode: 'ai', num_questions: 5 }`. (El coste será dinámico: num_images * 10).
+  2. Ejecuta `const transactionId = await spendCredits(...)` usando la librería compartida.
   4. Ejecuta peticiones a IA.
   5. **Doble Fallback:** Si IA falla -> Pexels. Si Pexels falla -> `public/assets/fallback.jpg`.
   6. **Transparencia en DB:** Imágenes de fallback llevan el metadato `source: 'stock_fallback'`.
   7. Al final, ejecuta `refund_credits(user_id, 20, transaction_id)` por las 2 fallidas (actualizando la transacción y devolviendo el saldo).
 
-#### [NEW] `supabase/functions/generate-image/index.ts`
+#### [NEW] `supabase/functions/generate-image/index.ts` ✅ [ESQUELETO CREADO]
 - **Flujo Individual (Botón Regenerar):**
-  1. Chequeo atómico: `atomic_spend(user_id, 15, adventure_id, 'regeneration')`.
-  2. Si acierta, la imagen pasa de `source: 'stock_fallback'` a `source: 'ai'`.
+  1. Chequeo atómico: Se usa `spendCredits(..., 15, 'regeneration')`. Si no hay saldo, la función corta y devuelve HTTP 402.
+  2. *[Pendiente para próxima sesión]* Integrar la llamada real a OpenAI y actualizar la tabla para que la imagen pase de `source: 'stock_fallback'` a `source: 'ai'`.
 
 ### 3. Gobernanza y Resiliencia
-- **Actualización de Reglas (`AGENTS.md`):** Antes de aplicar las migraciones, añadir el flujo de `supabase/migrations/` al *SQL Lock*.
-- **Cron Cleanup (`pg_cron`):** Tarea cada 5 mins para limpiar transacciones `pending` (ej. por Hard-Timeout del backend).
+- **Cron Cleanup (`pg_cron`):** ✅ [COMPLETADO] Tarea cada 5 mins para limpiar transacciones `pending` (ej. por Hard-Timeout del backend).
+  - *Explicación técnica:* Se implementó `cleanup_pending_transactions()` que detecta registros de más de 5 minutos, reembolsa el importe de forma matemática sumando los créditos de vuelta al `profiles`, y actualiza el estado a `refunded`. Ya está programado y activo en producción.
 
 ### 4. Mejoras UX (Client-Side)
 - Bloqueo visual del selector de retos si el saldo es insuficiente.
@@ -70,5 +75,6 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 - **Banner de Transparencia:** Mostrar un aviso amigable ("Foto de archivo - IA saturada, no cobrada") para imágenes con `source: 'stock_fallback'`.
 
 ## Verification Plan
-1. **Prueba SQL y Ledger:** Ejecutar `atomic_spend` con saldo insuficiente. Verificar que retorna `NULL` y no crea ninguna fila en `credit_transactions`.
+1. **Prueba SQL y Ledger:** Ejecutar `atomic_spend` con saldo insuficiente. Verificar que retorna `NULL` y no crea ninguna fila en `credit_transactions`. ✅ *(Prueba SQL de BD superada).*
+   > **[NOTA DE AUDITORÍA - BLOQUEANTE PARA FASE 2]:** Cuando se desarrolle la Edge Function (Fase 2), es obligatorio que el código TypeScript verifique explícitamente `if (result === null)` y corte la ejecución, para evitar tomar un NULL silencioso de la base de datos como un falso positivo.
 2. **Prueba de Doble Fallback:** Forzar fallo de IA y bloquear URL de Pexels. Verificar que la imagen es el placeholder local y la API devuelve los créditos.

@@ -34,6 +34,9 @@
 | **26 Dic 2025** | `fix_public_sharing.txt` | Políticas RLS para enlaces compartidos. | ✅ Aplicado en prod (Evidencia: Guest Mode) |
 | **26 Dic 2025** | `fix_anonymous_updates.txt` | Permite UPDATE a usuarios anónimos (user_id IS NULL). | ✅ Aplicado en prod (Evidencia: Código verificado) |
 | **26 Dic 2025** | `fix_permissions_final.txt` | Parche definitivo RLS post-Navidad. | ✅ Aplicado en prod |
+| **08 Jul 2026** | `20260708_create_profiles_and_wallet.sql` | Creación de tabla profiles, credit_transactions y RPC atomic_spend. | ✅ Aplicado en prod |
+| **08 Jul 2026** | `20260708_auth_triggers.sql` | Trigger de creación de perfil y regalo de 50 créditos. | ✅ Aplicado en prod |
+| **11 Jul 2026** | `20260711_cron_cleanup_transactions.sql` | Configuración de pg_cron para reembolso automático de créditos en estado pending (5 mins). | ✅ Aplicado en prod |
 
 ---
 **Nota Operativa:** Los scripts marcados como "Incierto" no deben volver a ejecutarse ciegamente, ya que pertenecen a fases de iteración pasadas. Las políticas activas actuales están regidas por los scripts del 26 de Diciembre.
