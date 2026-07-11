@@ -178,7 +178,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                 {/* MODO VISUAL */}
                                 <div className="space-y-1 flex flex-col">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1 flex justify-between">
-                                        <span>Modo Visual</span>
+                                        <span>Imágenes</span>
                                     </label>
                                     <div className="bg-white/[0.02] rounded-xl p-2 border border-white/5 flex flex-col justify-center hover:border-white/10 transition-all flex-1">
                                         <div className="flex gap-1 h-full">
@@ -193,14 +193,14 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                                 className={`flex-1 py-2 rounded-lg text-[9px] font-black transition-all flex items-center justify-center uppercase tracking-wider gap-1.5 whitespace-nowrap ${config.mode === 'ai' ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
                                             >
                                                 <i className="fa-solid fa-wand-magic-sparkles text-[9px] opacity-80"></i>
-                                                <span>IA</span>
+                                                <span>IA (A medida)</span>
                                             </button>
                                             <button
                                                 onClick={() => setConfig({ ...config, mode: 'stock' })}
                                                 className={`flex-1 py-2 rounded-lg text-[9px] font-black transition-all flex items-center justify-center uppercase tracking-wider gap-1.5 whitespace-nowrap ${config.mode === 'stock' ? 'bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02] z-10' : 'text-white/30 hover:text-white hover:bg-white/5 bg-white/[0.02]'}`}
                                             >
                                                 <i className="fa-solid fa-camera text-[9px] opacity-80"></i>
-                                                <span>Archivo</span>
+                                                <span>Fotos (Stock)</span>
                                             </button>
                                         </div>
                                     </div>
