@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { SOUND_URLS } from '../constants';
 
+const audioCache: Partial<Record<keyof typeof SOUND_URLS, HTMLAudioElement>> = {};
+
 export const useAudio = (
     initialVolume: number = 1.0,
     initialMuted: boolean = false
@@ -33,7 +35,13 @@ export const useAudio = (
     const playSfx = (type: keyof typeof SOUND_URLS, forcedMuted?: boolean) => {
         const isMuted = forcedMuted !== undefined ? forcedMuted : sfxMuted;
         if (isMuted || !SOUND_URLS[type]) return;
-        const audio = new Audio(SOUND_URLS[type]);
+        
+        if (!audioCache[type]) {
+            audioCache[type] = new Audio(SOUND_URLS[type]);
+            audioCache[type]!.preload = 'auto';
+        }
+        
+        const audio = audioCache[type]!.cloneNode() as HTMLAudioElement;
         audio.volume = 0.4 * masterVolume;
         audio.play().catch(() => { });
     };
