@@ -51,7 +51,7 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 - Maneja el coste dinámico y contiene la regla bloqueante de auditoría (captura el `null` y lanza `InsufficientFundsError`).
 - **⚠️ INSTRUCCIÓN PARA AGENTES:** Cualquier función nueva (como `generate-quiz` o `generate-image`) DEBE importar y usar la función `spendCredits` de este módulo. Prohibido reprogramar llamadas a `atomic_spend` o comprobaciones manuales de NULL.
 
-#### [MODIFY] `supabase/functions/generate-quiz/index.ts`
+#### [DONE] `supabase/functions/generate-adventure/index.ts` (Antes llamado generate-quiz) ✅ [COMPLETADO]
 - **Fallo Parcial y Check Atómico Estricto (Usando Guardián):**
   1. Input: `{ mode: 'ai', num_questions: 5 }`. (El coste será dinámico: num_images * 10).
   2. Ejecuta `const transactionId = await spendCredits(...)` usando la librería compartida.
@@ -72,7 +72,8 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 ### 4. Mejoras UX (Client-Side)
 - Bloqueo visual del selector de retos si el saldo es insuficiente.
 - Throttling/Debounce en botón Stock de Invitados (Pexels rate-limit).
-- **Banner de Transparencia:** Mostrar un aviso amigable ("Foto de archivo - IA saturada, no cobrada") para imágenes con `source: 'stock_fallback'`.
+- **Banner de Transparencia:** Mostrar un aviso amigable ("Foto de archivo - IA saturada, no cobrada") para imágenes con `source: 'stock_fallback'`. ✅ [COMPLETADO]
+- **Integración Backend (Simulador de progreso):** Barra de carga simulada acoplada a la llamada única de Edge Function. ✅ [COMPLETADO]
 
 ## Verification Plan
 1. **Prueba SQL y Ledger:** Ejecutar `atomic_spend` con saldo insuficiente. Verificar que retorna `NULL` y no crea ninguna fila en `credit_transactions`. ✅ *(Prueba SQL de BD superada).*

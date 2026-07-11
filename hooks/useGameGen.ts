@@ -273,7 +273,7 @@ export const useGameGen = (
         inProgressImages.current.clear();
 
         setAppState('generating');
-        setLoadingMessage('Conectando con la IA...');
+        setLoadingMessage('Generando aventura con IA (esto puede tardar unos segundos)...');
         setIsCreatorMode(true);
         setProgress(10);
 
@@ -284,24 +284,6 @@ export const useGameGen = (
             setNormalizedTopic(data.correctedTopic || config.topic);
             setNormalizedAudience(data.correctedAudience || config.audience);
 
-            setLoadingMessage('Pintando tu aventura...');
-            setProgress(40); // Text generation complete
-
-            const preloadCount = Math.min(3, data.questions.length);
-            const progressPerImage = 55 / preloadCount; // Distribute ~55% across images to reach ~95%
-
-            for (let i = 0; i < preloadCount; i++) {
-                try {
-                    if (i > 0) setLoadingMessage(`Generando imagen ${i + 1}/${config.count}...`);
-
-                    const imgUrl = await fetchSmartImage(data.questions[i].visualPrompt, false);
-                    data.questions[i].imageData = imgUrl;
-                } catch (e) {
-                    console.warn(`Preload Q${i} failed`, e);
-                } finally {
-                    setProgress(prev => Math.min(95, prev + progressPerImage));
-                }
-            }
             setProgress(100);
 
             // Update state with ready images
@@ -334,9 +316,6 @@ export const useGameGen = (
             } catch (err) {
                 console.error("Auto-save exception:", err);
             }
-
-            // Start Background Preloading
-            preloadImages(data.questions, preloadCount);
 
             setTimeout(() => {
                 setAppState('start_screen');

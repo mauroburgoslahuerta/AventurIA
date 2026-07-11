@@ -144,6 +144,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                             setImgError(true);
                         }}
                     />
+                    {questions[currentQIndex]?.source === 'stock_fallback' && (
+                        <div className="absolute top-4 left-4 z-50 bg-amber-500/90 text-slate-900 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 animate-fade-in">
+                            <i className="fa-solid fa-triangle-exclamation"></i>
+                            Foto de archivo (IA Saturada - No cobrada)
+                        </div>
+                    )}
                     {imgError && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 border-r border-white/10 animate-fade-in">
                             <i className="fa-solid fa-image text-4xl text-white/10 mb-4"></i>

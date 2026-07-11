@@ -7,6 +7,8 @@ export interface Question {
     hint: string;
     explanation: string;
     imageData?: string;
+    source?: string;
+    stockKeyword?: string;
 }
 
 export interface GameConfig {
