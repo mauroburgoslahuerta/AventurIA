@@ -79,3 +79,22 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 1. **Prueba SQL y Ledger:** Ejecutar `atomic_spend` con saldo insuficiente. Verificar que retorna `NULL` y no crea ninguna fila en `credit_transactions`. ✅ *(Prueba SQL de BD superada).*
    > **[NOTA DE AUDITORÍA - BLOQUEANTE PARA FASE 2]:** Cuando se desarrolle la Edge Function (Fase 2), es obligatorio que el código TypeScript verifique explícitamente `if (result === null)` y corte la ejecución, para evitar tomar un NULL silencioso de la base de datos como un falso positivo.
 2. **Prueba de Doble Fallback:** Forzar fallo de IA y bloquear URL de Pexels. Verificar que la imagen es el placeholder local y la API devuelve los créditos.
+
+---
+## Notas de Auditoría (12 Julio 2026)
+
+Tras la implementación de la palanca del selector visual (IA vs Archivo/Stock) en el frontend y la actualización de la Edge Function `generate-adventure`, se detectaron y aplazaron los siguientes problemas para una futura revisión:
+
+1. **Fallo en Generación (Edge Function):**
+   - Actualmente, la generación falla desde el frontend devolviendo el siguiente error por consola:
+     `Error: Edge Function returned a non-2xx status code`
+   - *Nota Técnica:* Se subieron las secrets a Supabase y se hicieron fixes en el código de la Edge Function (modelo Gemini y cabecera Referer), pero desde la interfaz de Vercel/localhost persiste o persistía este fallo. Requiere depuración profunda.
+   
+2. **Problema de Login en Entorno de Pruebas (Develop):**
+   - No es posible iniciar sesión en la rama `develop` (Vercel Preview).
+   - Esto se debe a que las URLs temporales de Vercel (ej: `https://*vercel.app/**`) no están autorizadas en Supabase.
+   - **Acción requerida por Mauro:** Ir a Supabase Dashboard -> Authentication -> URL Configuration -> Añadir `https://*vercel.app/**` a las "Redirect URLs".
+
+3. **Estado del Frontend (Modo Visual):**
+   - Se forzó el estado por defecto a `mode: 'stock'` (Fotos) globalmente. 
+   - Además, se añadió un `useEffect` en `SetupScreen.tsx` para forzar a los invitados a usar `stock`, evitando que la palanca de IA se quede bloqueada o activa por error antes de intentar generar.
