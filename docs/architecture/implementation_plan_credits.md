@@ -85,15 +85,15 @@ Este plan define la ejecución técnica para implementar la economía de crédit
 
 Tras la implementación de la palanca del selector visual (IA vs Archivo/Stock) en el frontend y la actualización de la Edge Function `generate-adventure`, se detectaron y aplazaron los siguientes problemas para una futura revisión:
 
-1. **Fallo en Generación (Edge Function):**
-   - Actualmente, la generación falla desde el frontend devolviendo el siguiente error por consola:
-     `Error: Edge Function returned a non-2xx status code`
-   - *Nota Técnica:* Se subieron las secrets a Supabase y se hicieron fixes en el código de la Edge Function (modelo Gemini y cabecera Referer), pero desde la interfaz de Vercel/localhost persiste o persistía este fallo. Requiere depuración profunda.
+1. **Fallo en Generación (Edge Function):** ✅ **[RESUELTO]**
+   - **Causa Real Descubierta:** El error genérico "500 non-2xx status code" estaba ocultando dos problemas en cadena:
+     1. Las restricciones HTTP Referer en la API Key de Google Cloud estaban bloqueando las URLs dinámicas temporales de Vercel (Preview).
+     2. El modelo `gemini-2.0-flash` configurado en producción ha sido **descatalogado (404 Not Found)** por Google.
+   - **Solución Aplicada:**
+     - Se autorizaron los dominios `*vercel.app/*` en la consola de Google Cloud.
+     - Se actualizó el código de la Edge Function (`generate-adventure`) para usar el nuevo modelo oficial `gemini-2.5-flash`.
+     - Se modificó la captura de errores en la Edge Function para devolver status 200 con un JSON de error en caso de fallo, saltándose la opacidad del SDK de Supabase, lo cual permitió diagnosticar la deprecación del modelo.
    
-2. **Problema de Login en Entorno de Pruebas (Develop):**
-   - No es posible iniciar sesión en la rama `develop` (Vercel Preview).
-   - Esto se debe a que las URLs temporales de Vercel (ej: `https://*vercel.app/**`) no están autorizadas en Supabase.
-   - **Acción requerida por Mauro:** Ir a Supabase Dashboard -> Authentication -> URL Configuration -> Añadir `https://*vercel.app/**` a las "Redirect URLs".
 
 3. **Estado del Frontend (Modo Visual):**
    - Se forzó el estado por defecto a `mode: 'stock'` (Fotos) globalmente. 

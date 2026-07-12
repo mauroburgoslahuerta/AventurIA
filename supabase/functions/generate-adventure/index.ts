@@ -143,7 +143,7 @@ serve(async (req) => {
             const reqOrigin = req.headers.get('Origin') || req.headers.get('Referer') || 'http://localhost:5173';
 
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
                 {
                     method: 'POST',
                     headers: { 
@@ -305,8 +305,9 @@ serve(async (req) => {
 
     } catch (error: any) {
         console.error("[generate-adventure] Error:", error.message);
+        // Devolvemos 200 en lugar de 500 para que supabase-js no oculte el mensaje real de error
         return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
+            status: 200,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
     }
