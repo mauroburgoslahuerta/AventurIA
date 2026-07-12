@@ -119,8 +119,9 @@ serve(async (req) => {
          - ANTI-SPOILER (CRÍTICO): Si la pregunta requiere identificar algo, describe un PAISAJE o ESCENA GENÉRICA. 
          - PROHIBIDO: NO incluyas visualmente NINGUNA de las opciones de respuesta (ni correcta ni incorrectas). Por ejemplo, si las opciones son animales, NO dibujes ninguno de ellos. Dibuja su hábitat o comida.
          - Asegura que la descripción sea "Safe For Work" y amable.
-      4. "stockKeyword": EXTRAE de la pregunta 1 o 2 palabras clave simples en INGLÉS optimizadas para buscar en Pexels.
-         - ANTI-SPOILER (CRÍTICO): Esta palabra clave NUNCA debe ser o contener la respuesta correcta. Debe ser un concepto general del entorno (ej: "jungle", "space", "laboratory").
+      4. "stockKeyword": EXTRAE 1 o 2 palabras clave en INGLÉS para buscar fotos en Pexels.
+         - IMPORTANTE: ADAPTA las palabras clave a la audiencia (ej: añade "kids", "toy" o "learning" para niños; "real", "authentic" o "museum" para adultos).
+         - ANTI-SPOILER (CRÍTICO): Esta palabra clave NUNCA debe ser o contener la respuesta correcta. Debe ser un concepto general del entorno (ej: "space children learning" o "astronomy telescope").
 
       Estructura del Juego:
       Formato JSON estricto:
