@@ -39,6 +39,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     const [showLoginNudge, setShowLoginNudge] = React.useState(false);
     const [showPremiumModal, setShowPremiumModal] = React.useState(false);
     const [showFeaturedSheet, setShowFeaturedSheet] = React.useState(false);
+    const [showCostWarning, setShowCostWarning] = React.useState(false);
     const dragControls = useDragControls();
 
     React.useEffect(() => {
@@ -56,6 +57,8 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     const handleGenerateClick = () => {
         if (!user) {
             setShowLoginNudge(true);
+        } else if (config.mode === 'ai') {
+            setShowCostWarning(true);
         } else {
             generateGame();
         }
@@ -435,6 +438,48 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                                     className="w-full py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
                                 >
                                     Continuar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- COST WARNING MODAL --- */}
+            {showCostWarning && (
+                <div
+                    onClick={() => setShowCostWarning(false)}
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-fade-in"
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[#0f172a] border border-cyan-500/30 rounded-3xl p-8 max-w-sm w-full shadow-[0_0_40px_rgba(6,182,212,0.15)] relative"
+                    >
+                        <div className="flex flex-col items-center text-center gap-4">
+                            <div className="w-16 h-16 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-2 shadow-inner shadow-yellow-500/20">
+                                <i className="fa-solid fa-coins text-3xl text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]"></i>
+                            </div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-wide">Confirmar Gasto</h3>
+                            <p className="text-sm text-white/70 leading-relaxed font-medium">
+                                Esta aventura con imágenes generadas por IA consumirá <strong className="text-yellow-400">{config.count * 10} créditos</strong> de tu saldo.
+                            </p>
+
+                            <div className="flex flex-col gap-3 w-full mt-4">
+                                <button
+                                    onClick={() => {
+                                        setShowCostWarning(false);
+                                        generateGame();
+                                    }}
+                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+                                >
+                                    <i className="fa-solid fa-check"></i>
+                                    Aceptar y Generar
+                                </button>
+                                <button
+                                    onClick={() => setShowCostWarning(false)}
+                                    className="w-full py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
+                                >
+                                    Cancelar
                                 </button>
                             </div>
                         </div>
