@@ -98,3 +98,21 @@ Tras la implementación de la palanca del selector visual (IA vs Archivo/Stock) 
 3. **Estado del Frontend (Modo Visual):**
    - Se forzó el estado por defecto a `mode: 'stock'` (Fotos) globalmente. 
    - Además, se añadió un `useEffect` en `SetupScreen.tsx` para forzar a los invitados a usar `stock`, evitando que la palanca de IA se quede bloqueada o activa por error antes de intentar generar.
+
+---
+## Notas de Auditoría (14 Julio 2026)
+
+Tras la revisión del módulo de regeneración y generación de aventuras con IA:
+
+1. **Gestión de Créditos y Fallbacks:** ✅ **[FUNCIONAL]**
+   - El sistema de reembolso parcial ha demostrado funcionar perfectamente. Cuando la generación de imágenes por IA falla (por restricciones de API u otros motivos), el motor hace fallback silencioso a Pexels/Local y reembolsa los créditos cobrados por adelantado con éxito.
+   - El modal de confirmación de coste de créditos se dispara correctamente antes de iniciar la generación en modo IA.
+   - Límite de caracteres en nombres largos integrado sin romper el layout.
+
+2. **Bloqueo por Restricciones de API Key (Edge Functions):** ⚠️ **[PENDIENTE DE VALIDACIÓN]**
+   - **Problema:** Las Edge Functions estaban siendo bloqueadas por Google Gemini (403 Permission Denied) al generar imágenes, a pesar de que la API Key admitía dominios de Vercel. Esto causaba fallos masivos en la IA y forzaba el fallback continuo.
+   - **Solución implementada:** Se ha inyectado explícitamente la cabecera `Referer: http://localhost:3000/` en las llamadas a la API de Google desde `generate-adventure` y `generate-image` para emparejar el comportamiento exitoso que tenía la API de Vercel. Queda pendiente de confirmación manual por parte del usuario.
+
+3. **Pruebas de Regeneración de Imágenes:** ⚠️ **[PENDIENTE DE PRUEBAS COMPLETAS]**
+   - Al haber fallado la generación inicial de la aventura con IA por el problema de los permisos de la API Key, no se pudo realizar un test end-to-end de la **regeneración de imágenes**. 
+   - **Acción requerida:** Se debe probar el ciclo completo: generar juego con IA -> usar el botón de regenerar imagen en un reto -> verificar descuento de créditos -> verificar que la tabla en DB actualiza `source: 'ai'`.
