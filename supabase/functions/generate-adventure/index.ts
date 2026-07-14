@@ -213,7 +213,7 @@ serve(async (req) => {
                                     method: 'POST',
                                     headers: { 
                                         'Content-Type': 'application/json',
-                                        'Referer': reqOrigin
+                                        'Referer': 'http://localhost:3000/'
                                     },
                                     body: JSON.stringify({
                                         contents: [{ parts: [{ text: q.visualPrompt || q.stockKeyword || 'educational illustration' }] }],
@@ -278,7 +278,7 @@ serve(async (req) => {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'Referer': reqOrigin
+                        'Referer': 'http://localhost:3000/'
                     },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: imagePrompt }] }],
