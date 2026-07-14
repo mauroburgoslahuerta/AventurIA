@@ -208,7 +208,7 @@ serve(async (req) => {
                     if (actualMode === 'ai') {
                         try {
                             const imgRes = await fetch(
-                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`,
+                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
                                 {
                                     method: 'POST',
                                     headers: { 
@@ -216,7 +216,10 @@ serve(async (req) => {
                                         'Referer': reqOrigin
                                     },
                                     body: JSON.stringify({
-                                        contents: [{ parts: [{ text: q.visualPrompt || q.stockKeyword || 'educational illustration' }] }]
+                                        contents: [{ parts: [{ text: q.visualPrompt || q.stockKeyword || 'educational illustration' }] }],
+                                        generationConfig: {
+                                            responseModalities: ["Image"]
+                                        }
                                     })
                                 }
                             );
@@ -270,7 +273,7 @@ serve(async (req) => {
 
             const reqOrigin = req.headers.get('Origin') || req.headers.get('Referer') || 'http://localhost:5173';
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
                 {
                     method: 'POST',
                     headers: { 
@@ -278,7 +281,10 @@ serve(async (req) => {
                         'Referer': reqOrigin
                     },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: imagePrompt }] }]
+                        contents: [{ parts: [{ text: imagePrompt }] }],
+                        generationConfig: {
+                            responseModalities: ["Image"]
+                        }
                     })
                 }
             );
