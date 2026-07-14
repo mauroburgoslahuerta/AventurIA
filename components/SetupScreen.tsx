@@ -15,6 +15,7 @@ interface SetupScreenProps {
     launchAdventure: (adv: Adventure) => void;
     user: any; // Using any to avoid Supabase type dependency issues, as it's just a check
     setShowAuthOverlay: (show: boolean) => void;
+    setShowInfoModal: (show: boolean) => void;
 }
 
 export const SetupScreen: React.FC<SetupScreenProps> = ({
@@ -28,7 +29,8 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     featuredAdventures,
     launchAdventure,
     user,
-    setShowAuthOverlay
+    setShowAuthOverlay,
+    setShowInfoModal
 }) => {
     const pageVariants = {
         initial: { opacity: 0, y: 20, scale: 0.98 },
@@ -40,7 +42,15 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
     const [showPremiumModal, setShowPremiumModal] = React.useState(false);
     const [showFeaturedSheet, setShowFeaturedSheet] = React.useState(false);
     const [showCostWarning, setShowCostWarning] = React.useState(false);
+    const [showInfoTooltip, setShowInfoTooltip] = React.useState(false); // Tooltip State
     const dragControls = useDragControls();
+
+    // Auto-show Tooltip on mount (once)
+    React.useEffect(() => {
+        const t1 = setTimeout(() => setShowInfoTooltip(true), 2000);
+        const t2 = setTimeout(() => setShowInfoTooltip(false), 10000);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, []);
 
     React.useEffect(() => {
         if (!user && config.mode === 'ai') {
@@ -78,6 +88,38 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
                 <div className="glass-card overflow-hidden shadow-2xl flex flex-col bg-[#0f172a]/85 backdrop-blur-xl border border-white/10 px-8 pb-8 pt-4">
                     {/* Header Container */}
                     <div className="relative w-full flex flex-row items-center justify-center pt-0 pb-[30px] mb-6 border-b border-white/5">
+
+                        {/* Info Button with Tooltip */}
+                        <div className="absolute top-2 right-2 md:top-4 md:right-4 z-50">
+                            <button
+                                onClick={() => { setShowInfoModal(true); setShowInfoTooltip(false); }}
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#0f172a]/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 transition-all shadow-xl relative overflow-visible group"
+                                title="Sobre AventurIA"
+                            >
+                                <i className="fa-solid fa-circle-info text-sm group-hover:animate-pulse"></i>
+
+                                {/* Pulsing Ring for attention if tooltip is shown */}
+                                {showInfoTooltip && (
+                                    <span className="absolute inset-0 rounded-full border-2 border-cyan-400/50 animate-ping pointer-events-none"></span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {showInfoTooltip && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 10, scale: 0.9 }}
+                                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="absolute top-1/2 -translate-y-1/2 right-full mr-3 w-48 bg-cyan-500 text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl shadow-cyan-500/20 pointer-events-none z-50 flex items-center gap-2"
+                                    >
+                                        <i className="fa-solid fa-lightbulb text-yellow-900 animate-bounce"></i>
+                                        <span>Filosofía y consejos de uso</span>
+                                        {/* Arrow */}
+                                        <div className="absolute top-1/2 -translate-y-1/2 left-full -ml-1 w-2 h-2 bg-cyan-500 rotate-45 transform"></div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         {/* Global Offset Wrapper */}
                         <div className="flex flex-row items-center justify-center gap-[36px] md:gap-[27px] translate-x-[-7px] md:translate-x-[-11px]">
