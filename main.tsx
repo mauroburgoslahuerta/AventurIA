@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -46,6 +46,7 @@ const App = () => {
   const {
     user,
     setUser,
+    credits,
     showAuthOverlay,
     setShowAuthOverlay,
     handleLoginSuccess,
@@ -793,6 +794,21 @@ const App = () => {
                 <i className="fa-solid fa-compass mr-2"></i>
                 <span className="hidden md:inline">Mis Aventuras</span>
               </button>
+
+              {credits !== null && (
+                <div className="flex items-center bg-[#1e293b]/80 border border-yellow-500/20 rounded-full pl-3 pr-1 py-1 h-8 shadow-inner shadow-black/50">
+                  <i className="fa-solid fa-coins text-yellow-400 text-[10px] mr-2 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)]"></i>
+                  <span className="text-xs text-yellow-50 font-bold font-mono mr-2 tracking-wider">{credits}</span>
+                  <button 
+                    onClick={() => { playSfx('click', sfxMuted); showToast("Página de compra de créditos próximamente"); }}
+                    className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white hover:scale-110 hover:shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all border border-emerald-300/30 cursor-pointer"
+                    title="Comprar Créditos"
+                  >
+                    <i className="fa-solid fa-plus text-[10px] font-black"></i>
+                  </button>
+                </div>
+              )}
+
               <span className="text-xs text-white/80 font-bold hidden md:block border-l border-white/10 pl-3">
                 {user.email?.split('@')[0]}
               </span>

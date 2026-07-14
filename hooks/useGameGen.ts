@@ -23,119 +23,20 @@ export const useGameGen = (
     // Guard against duplicate concurrent generation for the same question index
     const inProgressImages = useRef<Set<number>>(new Set());
 
-    /* 
-     * 🔒 BLINDAJE: TRIPLE FALLBACK DE IMÁGENES (CRÍTICO)
-     * ESTRATEGIA: Gemini -> Pollinations (Flux) -> Pollinations (Turbo/Default)
-     * NO TOCAR SIN VALIDACIÓN.
-     */
-    const fetchSmartImage = async (prompt: string, isRegen: boolean): Promise<string> => {
-        return new Promise(async (resolve, reject) => {
-            const attemptPollinations = (model: string) => {
-                const encodedPrompt = encodeURIComponent(prompt);
-                const seed = Math.floor(Math.random() * 1000000);
-                const modelParam = model ? `&model=${model}` : '';
-
-                // Secure Proxy
-                const url = `/api/pollinations-proxy?prompt=${encodedPrompt}&width=1024&height=600${modelParam}&seed=${seed}`;
-
-                const img = new Image();
-                const safetyTimeout = setTimeout(() => {
-                    img.src = "";
-                    img.onerror?.(new Event('timeout'));
-                }, 20000); // 20s timeout
-
-                img.src = url;
-                img.onload = () => {
-                    clearTimeout(safetyTimeout);
-                    if (!isRegen) { setIsUsingPollinations(true); isUsingPollinationsRef.current = true; }
-                    resolve(url);
-                };
-                img.onerror = () => {
-                    clearTimeout(safetyTimeout);
-                    if (model === 'flux') {
-                        console.warn("Flux failed, trying Turbo...");
-                        attemptPollinations('turbo');
-                    } else if (model === 'turbo') {
-                        console.warn("Turbo failed, trying Default...");
-                        attemptPollinations('');
-                    } else {
-                        reject(new Error("All Pollinations models failed"));
-                    }
-                };
-            };
-
-            if (isRegen || isUsingPollinationsRef.current) {
-                attemptPollinations('flux');
-                return;
-            }
-
-            // 1. Gemini Image Generation (High-Volume Model: gemini-2.5-flash-preview-image)
-            try {
-                // Enforce Quota (Limit 2000)
-                const quotaOk = await checkDailyQuota();
-                if (!quotaOk) {
-                    console.warn("Daily Quota Exceeded (2000). Switching to Pollinations.");
-                    throw new Error("Quota Exceeded");
-                }
-
-                console.log("Attempting Gemini 2.5 Flash Preview generation..."); // DEBUG
-
-                const response1 = await fetch('/api/generate-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt })
-                });
-
-                if (!response1.ok) {
-                    const errorData = await response1.json().catch(() => ({}));
-                    console.error("Gemini 2.5 API Error Details:", errorData);
-                    throw new Error(`Gemini API Error: ${response1.status} - ${JSON.stringify(errorData)}`);
-                }
-
-                const data1 = await response1.json();
-
-                let imgUrl = '';
-                // Parse Gemini generateContent response
-                const parts = data1.candidates?.[0]?.content?.parts || [];
-                const imagePart = parts.find((p: any) => p.inlineData);
-
-                if (imagePart) {
-                    const inlineData = imagePart.inlineData;
-                    imgUrl = `data:${inlineData.mimeType};base64,${inlineData.data}`;
-                } else {
-                    // Fallback logging
-                    console.warn("Gemini response parts:", parts);
-                    if (parts.some((p: any) => p.text)) {
-                        console.warn("Gemini returned text:", parts.find((p: any) => p.text)?.text);
-                    }
-                    throw new Error("No Gemini image data in response");
-                }
-
-                // Validate image loads
-                const img = new Image();
-                img.src = imgUrl;
-                img.onload = () => {
-                    incrementDailyQuota();
-                    resolve(imgUrl);
-                };
-                // FIX: was throwing inside async callback (uncaught) → Promise hung forever
-                // Now correctly falls back to Pollinations
-                img.onerror = () => {
-                    console.warn("Gemini image data failed to load, switching to Pollinations...");
-                    // Note: ref is only set to true in attemptPollinations onload (when Pollinations actually works)
-                    attemptPollinations('flux');
-                };
-
-            } catch (geminiError) {
-                console.error("Gemini image failed. Switching to Pollinations. Reason:", geminiError);
-                // Note: ref is only set to true in attemptPollinations onload (when Pollinations actually works)
-                attemptPollinations('flux');
-            }
-        });
-    };
-
     const generateImage = async (index: number, prompt: string, forceRegen: boolean = false, currentQIndex: number, questions: Question[]) => {
         if (!prompt) return;
+
+        // Si es invitado, no puede regenerar
+        if (!user) {
+            console.warn("Guest users cannot regenerate images.");
+            return;
+        }
+
+        const adventureId = new URLSearchParams(window.location.search).get('id');
+        if (!adventureId) {
+            console.error("No adventure ID found in URL. Cannot regenerate image.");
+            return;
+        }
 
         // Only show loading state if we are regenerating the CURRENTLY viewed image
         if (index === currentQIndex) {
@@ -154,104 +55,49 @@ export const useGameGen = (
         }
         inProgressImages.current.add(index);
 
-        const startPollinations = (modelToStartWith: string) => {
-            attemptPollinations(modelToStartWith);
-        };
-
-        const attemptPollinations = (model: string) => {
-            // Use our own secure proxy handling the API Key
-            const encodedPrompt = encodeURIComponent(prompt);
-            const seed = Math.floor(Math.random() * 1000000);
-            const modelParam = model ? `&model=${model}` : '';
-
-            // Point to our local proxy
-            const url = `/api/pollinations-proxy?prompt=${encodedPrompt}&width=1024&height=600${modelParam}&seed=${seed}`;
-
-            const img = new Image();
-
-            // Safety Timeout: 12 seconds max per try
-            const safetyTimeout = setTimeout(() => {
-                img.src = ""; // Cancel load
-                img.onerror?.(new Event('timeout'));
-            }, 12000);
-
-            img.src = url;
-            img.onload = () => {
-                clearTimeout(safetyTimeout);
-                setQuestions(prev => prev.map((q, i) => i === index ? { ...q, imageData: url } : q));
-                setIsImageReady(true);
-                setIsRegeneratingImage(false);
-                if (!isRegeneratingImage) { setIsUsingPollinations(true); isUsingPollinationsRef.current = true; }
-            };
-            img.onerror = () => {
-                clearTimeout(safetyTimeout);
-                if (model === 'flux') {
-                    console.warn("Pollinations Flux failed (or timeout), retrying with Turbo...");
-                    attemptPollinations('turbo');
-                } else if (model === 'turbo') {
-                    console.warn("Pollinations Turbo failed, retrying with Default...");
-                    attemptPollinations('');
-                } else {
-                    console.error("All image generation attempts failed.");
-                    setImgError(true);
-                    setIsImageReady(true);
-                    setIsRegeneratingImage(false);
-                }
-            };
-        };
-
-        // LOGIC: If regenerating OR already flagging quota exceeded, skip Gemini.
-        // 'forceRegen' parameter ensures we don't rely on async state 'isRegeneratingImage' exclusively.
-        if (forceRegen || isRegeneratingImage || isUsingPollinationsRef.current) {
-            startPollinations('flux');
-            return;
-        }
-
-        // 2. Main Generation Logic - Gemini 2.5 Flash Preview
+        // Main Generation Logic - Supabase Edge Function
         try {
-            // Enforce Quota
-            const quotaOk = await checkDailyQuota();
-            if (!quotaOk) {
-                throw new Error("Quota Exceeded");
-            }
-
-            const response1 = await fetch('/api/generate-image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
+            const { data, error } = await supabase.functions.invoke('generate-image', {
+                body: {
+                    adventure_id: adventureId,
+                    question_index: index,
+                    prompt: prompt
+                }
             });
 
-            if (!response1.ok) {
-                const errorData = await response1.json().catch(() => ({}));
-                console.error("Gemini 2.5 API Error Details:", errorData);
-                throw new Error(`Gemini API Error: ${response1.status} - ${JSON.stringify(errorData)}`);
+            if (error) {
+                // El cliente arroja un HttpError si no es 2xx, o podemos leer error
+                throw error;
             }
 
-            const data1 = await response1.json();
+            if (data?.error) {
+                if (data.error === 'Saldo insuficiente para regenerar la imagen' || data.status === 402) {
+                    alert('Saldo insuficiente para regenerar la imagen (Se requieren 15 créditos).');
+                }
+                throw new Error(data.error);
+            }
 
-            let imgUrl = '';
-            const parts = data1.candidates?.[0]?.content?.parts || [];
-            const imagePart = parts.find((p: any) => p.inlineData);
-
-            if (imagePart) {
-                const inlineData = imagePart.inlineData;
-                imgUrl = `data:${inlineData.mimeType};base64,${inlineData.data}`;
+            if (data?.imageData) {
+                // Success
+                setQuestions(prev => prev.map((q, i) => i === index ? { ...q, imageData: data.imageData, source: 'ai' } : q));
+                setIsImageReady(true);
+                setIsRegeneratingImage(false);
+                inProgressImages.current.delete(index);
             } else {
-                console.error("Invalid Gemini response structure (No Image Part):", data1);
-                throw new Error("No Gemini data in response");
+                throw new Error("No image data in response");
             }
 
-            // Success
-            setQuestions(prev => prev.map((q, i) => i === index ? { ...q, imageData: imgUrl } : q));
+        } catch (e: any) {
+            console.error("Image generation failed:", e);
+            
+            // Re-throw or show error alert if it's 402
+            if (e.message && e.message.includes("402")) {
+                alert('Saldo insuficiente para regenerar la imagen (Se requieren 15 créditos).');
+            }
+
+            setImgError(true);
             setIsImageReady(true);
             setIsRegeneratingImage(false);
-            incrementDailyQuota();
-            inProgressImages.current.delete(index);
-
-        } catch (e) {
-            console.warn("Gemini image failed, switching to Pollinations...", e);
-            // Note: ref is only set to true in startPollinations onload (when Pollinations actually works)
-            startPollinations('flux');
             inProgressImages.current.delete(index);
         }
     };
@@ -333,7 +179,6 @@ export const useGameGen = (
         isRegeneratingImage, setIsRegeneratingImage,
         imgError, setImgError,
         isUsingPollinations, setIsUsingPollinations,
-        fetchSmartImage,
         generateImage,
         generateGame,
         preloadImages
