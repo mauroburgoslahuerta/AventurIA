@@ -1,0 +1,67 @@
+-- 1. Enable RLS on adventures if not already enabled
+ALTER TABLE adventures ENABLE ROW LEVEL SECURITY;
+
+-- 2. Add user_id to adventures (link to auth.users)
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'adventures' AND column_name = 'user_id') THEN
+        ALTER TABLE adventures ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
+-- 3. Create Game Sessions Table (For Leaderboards/Stats)
+CREATE TABLE IF NOT EXISTS game_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    adventure_id UUID REFERENCES adventures(id) ON DELETE CASCADE,
+    player_alias TEXT NOT NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL, -- Optional: if logged in
+    score INT DEFAULT 0,
+    max_score INT DEFAULT 0,
+    played_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for game_sessions
+ALTER TABLE game_sessions ENABLE ROW LEVEL SECURITY;
+
+-- 4. Policies for Adventures
+
+-- Allow Everyone to Read Public Adventures
+DROP POLICY IF EXISTS "Public Read Adventures" ON adventures;
+CREATE POLICY "Public Read Adventures" ON adventures FOR SELECT USING (true);
+
+-- Allow Authenticated Users to Insert their OWN adventures
+DROP POLICY IF EXISTS "Users Insert Own Adventures" ON adventures;
+CREATE POLICY "Users Insert Own Adventures" ON adventures FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+-- Allow Owners to Update/Delete their adventures
+DROP POLICY IF EXISTS "Owners Update Adventures" ON adventures;
+CREATE POLICY "Owners Update Adventures" ON adventures FOR UPDATE USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Owners Delete Adventures" ON adventures;
+CREATE POLICY "Owners Delete Adventures" ON adventures FOR DELETE USING (auth.uid() = user_id);
+
+-- Allow ANONYMOUS/GUEST inserts (for now, to maintain current functionality if needed, though UI will control ownership)
+-- We keep "Guest Insert" for non-logged in creators, but user_id will be NULL.
+DROP POLICY IF EXISTS "Guest Insert Adventures" ON adventures;
+CREATE POLICY "Guest Insert Adventures" ON adventures FOR INSERT TO anon WITH CHECK (user_id IS NULL);
+
+
+-- 5. Policies for Game Sessions
+
+-- Anyone can INSERT a session (Guests playing)
+DROP POLICY IF EXISTS "Anyone Insert Session" ON game_sessions;
+CREATE POLICY "Anyone Insert Session" ON game_sessions FOR INSERT WITH CHECK (true);
+
+-- Authors can READ sessions belonging to their adventures
+DROP POLICY IF EXISTS "Authors Read Sessions" ON game_sessions;
+CREATE POLICY "Authors Read Sessions" ON game_sessions FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM adventures 
+        WHERE adventures.id = game_sessions.adventure_id 
+        AND adventures.user_id = auth.uid()
+    )
+);
+
+-- Users can READ their OWN played sessions
+DROP POLICY IF EXISTS "Users Read Own Sessions" ON game_sessions;
+CREATE POLICY "Users Read Own Sessions" ON game_sessions FOR SELECT USING (auth.uid() = user_id);

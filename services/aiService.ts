@@ -1,35 +1,56 @@
+import { supabase } from "../supabaseClient";
 import { GameConfig, Question } from "../types";
 
-interface AdventureData {
-    questions: Question[];
-    correctedTopic?: string;
-    correctedAudience?: string;
-    meta?: {
-        topic_display?: string;
-        audience_display?: string;
-    };
+export interface GenerateTicket {
+    adventureId: string;
+    status: string;
+    mode: string;
 }
 
-export const generateAdventure = async (config: GameConfig, setProgress?: (progress: number) => void): Promise<AdventureData> => {
-    if (setProgress) setProgress(10);
+export const requestAdventureTicket = async (config: GameConfig): Promise<GenerateTicket> => {
+    try {
+        const { data, error } = await supabase.functions.invoke('generate-adventure', {
+            body: {
+                action: 'generate_game',
+                topic: config.topic,
+                audience: config.audience,
+                count: config.count,
+                difficulty: config.difficulty,
+                mode: config.mode || 'ai'
+            }
+        });
 
-    const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ config })
-    });
+        if (error) {
+            console.error("Edge function error:", error);
+            if (error.context?.status === 402) {
+                throw new Error("Saldo insuficiente para generar las imágenes de la aventura.");
+            }
+            throw new Error(error.message || `Error del servidor: Edge Function falló`);
+        }
+        
+        if (!data || data.error) {
+            throw new Error(data?.error || `Error del servidor al generar aventura`);
+        }
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Error del servidor: ${response.status}`);
+        return {
+            adventureId: data.adventureId,
+            status: data.status,
+            mode: data.mode
+        };
+    } catch (e) {
+        throw e;
     }
+};
 
-    const data = await response.json();
+export const formatCompletedQuestions = (questions: any[]): Question[] => {
+    if (!questions || questions.length === 0) return [];
+    
+    return questions.map((q: any) => {
+        // Map image to imageData for frontend compatibility
+        if (q.image && !q.imageData) {
+            q.imageData = q.image;
+        }
 
-    if (!data.questions || data.questions.length === 0) throw new Error("No se generaron preguntas");
-
-    // --- SHUFFLE ANSWERS (Fix for AI Bias) ---
-    data.questions.forEach((q: any) => {
         // Store original correct answer string
         const correctAnswer = q.options[q.correctIndex];
 
@@ -41,11 +62,7 @@ export const generateAdventure = async (config: GameConfig, setProgress?: (progr
 
         // Find new correct index
         q.correctIndex = q.options.indexOf(correctAnswer);
+        
+        return q;
     });
-
-    return {
-        questions: data.questions,
-        correctedTopic: data.correctedTopic || data.meta?.topic_display,
-        correctedAudience: data.correctedAudience || data.meta?.audience_display
-    };
 };

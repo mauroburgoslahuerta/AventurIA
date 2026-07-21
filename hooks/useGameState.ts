@@ -22,8 +22,9 @@ export const useGameState = (
         topic: '',
         audience: '',
         count: 5,
-        timerSeconds: 0,
-        difficulty: 'medium'
+        timerSeconds: 30, // Default 30s
+        difficulty: 'medium',
+        mode: 'stock'
     });
 
     const [questions, setQuestions] = useState<Question[]>([]);

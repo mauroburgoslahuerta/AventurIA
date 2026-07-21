@@ -7,6 +7,8 @@ export interface Question {
     hint: string;
     explanation: string;
     imageData?: string;
+    source?: string;
+    stockKeyword?: string;
 }
 
 export interface GameConfig {
@@ -15,6 +17,7 @@ export interface GameConfig {
     count: number;
     timerSeconds: number;
     difficulty: string;
+    mode: 'ai' | 'stock';
 }
 
 export interface Adventure {
