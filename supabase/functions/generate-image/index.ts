@@ -7,17 +7,32 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+    
+    // Cliente autenticado del usuario
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, { 
+      global: { headers: { Authorization: req.headers.get('Authorization')! } } 
+    })
+
+    // Cliente de servicio para bypass de RLS en Storage si fuera necesario
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || supabaseAnonKey;
+    const serviceClient = createClient(supabaseUrl, serviceRoleKey);
 
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
     if (authError || !user) {
@@ -53,7 +68,6 @@ serve(async (req) => {
       throw new Error("GEMINI_API_KEY no está configurada en los secrets.");
     }
 
-    const reqOrigin = req.headers.get('Origin') || req.headers.get('Referer') || 'http://localhost:5173';
     let imgUrl = '';
 
     try {
@@ -84,12 +98,36 @@ serve(async (req) => {
       const imagePart = parts.find((p: any) => p.inlineData);
 
       if (imagePart) {
-        imgUrl = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
+        // PROHIBIDO BASE64 -> Subir a Supabase Storage
+        const mimeType = imagePart.inlineData.mimeType;
+        const base64Data = imagePart.inlineData.data;
+        const bytes = base64ToUint8Array(base64Data);
+        
+        const filename = `${adventure_id}/regen_${question_index}_${Date.now()}.jpg`;
+        const { error: uploadError } = await serviceClient
+            .storage
+            .from('adventure_images')
+            .upload(filename, bytes, {
+                contentType: mimeType,
+                upsert: true
+            });
+
+        if (uploadError) {
+            console.error(`[generate-image] Error subiendo imagen a Storage:`, uploadError);
+            throw new Error(`Storage Upload Failed: ${uploadError.message}`);
+        }
+
+        const { data: { publicUrl } } = serviceClient
+            .storage
+            .from('adventure_images')
+            .getPublicUrl(filename);
+            
+        imgUrl = publicUrl;
       } else {
         throw new Error("No image data returned from Gemini.");
       }
     } catch (apiError: any) {
-      console.error(`[generate-image] Error llamando a IA: ${apiError.message}`);
+      console.error(`[generate-image] Error llamando a IA o Storage: ${apiError.message}`);
       await refundCredits(supabaseClient, transactionId, 15);
       throw apiError;
     }
@@ -103,20 +141,17 @@ serve(async (req) => {
 
     if (fetchError || !adventureData) {
       console.error(`[generate-image] Error fetching adventure:`, fetchError);
-      // No devolvemos créditos aquí, porque la imagen ya se generó y costó dinero, 
-      // pero por amabilidad podríamos hacerlo. Para seguir política estricta, si la base de datos falla al guardar, 
-      // el usuario pierde el crédito pero tiene la imagen si se la pasamos en la respuesta.
-      // O bien hacemos refund si falla el guardado:
       await refundCredits(supabaseClient, transactionId, 15);
       throw new Error(`Failed to fetch adventure for update`);
     }
 
     const questions = adventureData.questions;
     if (Array.isArray(questions) && questions[question_index]) {
-      questions[question_index].imageData = imgUrl;
+      questions[question_index].imageData = imgUrl; // Ahora es una URL pública
       questions[question_index].source = 'ai';
 
-      const { error: updateError } = await supabaseClient
+      // Usar serviceClient para saltar RLS si hay problemas, o supabaseClient si el usuario es dueño
+      const { error: updateError } = await serviceClient
         .from('adventures')
         .update({ questions })
         .eq('id', adventure_id);
@@ -132,8 +167,11 @@ serve(async (req) => {
       throw new Error(`Invalid question_index: ${question_index}`);
     }
 
-    // Completar transacción si existiese un flag status='completed', pero actualmente
-    // el trigger no lo requiere para que se descuente.
+    // Completar transacción explícitamente para que el cron (5 mins) no la reembolse
+    await serviceClient
+        .from('credit_transactions')
+        .update({ status: 'completed' })
+        .eq('id', transactionId);
 
     // 4. Respuesta de éxito
     return new Response(JSON.stringify({
