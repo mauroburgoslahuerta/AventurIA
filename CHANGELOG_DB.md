@@ -38,6 +38,9 @@
 | **08 Jul 2026** | `20260708_auth_triggers.sql` | Trigger de creación de perfil y regalo de 50 créditos. | ✅ Aplicado en prod |
 | **11 Jul 2026** | `20260711_cron_cleanup_transactions.sql` | Configuración de pg_cron para reembolso automático de créditos en estado pending (5 mins). | ✅ Aplicado en prod |
 | **11 Jul 2026** | `20260711_refund_credits.sql` | Función RPC `refund_credits` para reembolso parcial/total de créditos (mecanismo de fallback). | ✅ Aplicado en prod |
+| **21 Jul 2026** | `20260721_async_architecture.sql` | Columnas status y error_message en adventures, y trigger pg_net para Webhook Fire & Forget. | ✅ Aplicado en prod |
+| **21 Jul 2026** | `20260721_ensure_storage_bucket.sql` | Creación de bucket `adventure_images` y políticas RLS públicas para carga de imágenes asíncronas. | ✅ Aplicado en prod |
 
 ---
 **Nota Operativa:** Los scripts marcados como "Incierto" no deben volver a ejecutarse ciegamente, ya que pertenecen a fases de iteración pasadas. Las políticas activas actuales están regidas por los scripts del 26 de Diciembre.
+

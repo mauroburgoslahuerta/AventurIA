@@ -1,10 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { generateAdventure } from '../services/aiService';
-import { checkDailyQuota, incrementDailyQuota } from '../utils';
+import { requestAdventureTicket, formatCompletedQuestions } from '../services/aiService';
 import { supabase } from '../supabaseClient';
 import { Question, GameConfig } from '../types';
 
-// CRITICAL: TRIPLE FALLBACK LOGIC PRESERVED
 export const useGameGen = (
     setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
     setAppState: (state: any) => void,
@@ -18,15 +16,13 @@ export const useGameGen = (
     const [isRegeneratingImage, setIsRegeneratingImage] = useState(false);
     const [imgError, setImgError] = useState(false);
     const [isUsingPollinations, setIsUsingPollinations] = useState(false);
-    // Ref to avoid stale closure bug: async functions always read the current value
     const isUsingPollinationsRef = useRef(false);
-    // Guard against duplicate concurrent generation for the same question index
     const inProgressImages = useRef<Set<number>>(new Set());
+    const pollingIntervalRef = useRef<number | null>(null);
 
     const generateImage = async (index: number, prompt: string, forceRegen: boolean = false, currentQIndex: number, questions: Question[]) => {
         if (!prompt) return;
 
-        // Si es invitado, no puede regenerar
         if (!user) {
             console.warn("Guest users cannot regenerate images.");
             return;
@@ -38,38 +34,26 @@ export const useGameGen = (
             return;
         }
 
-        // Only show loading state if we are regenerating the CURRENTLY viewed image
         if (index === currentQIndex) {
             setIsImageReady(false);
         }
 
-        // Check if image already exists
         if (questions[index]?.imageData && !isRegeneratingImage && !forceRegen) {
             setIsImageReady(true);
             return;
         }
 
-        // Guard: prevent duplicate concurrent generation for the same index
         if (!forceRegen && inProgressImages.current.has(index)) {
             return;
         }
         inProgressImages.current.add(index);
 
-        // Main Generation Logic - Supabase Edge Function
         try {
             const { data, error } = await supabase.functions.invoke('generate-image', {
-                body: {
-                    adventure_id: adventureId,
-                    question_index: index,
-                    prompt: prompt
-                }
+                body: { adventure_id: adventureId, question_index: index, prompt: prompt }
             });
 
-            if (error) {
-                // El cliente arroja un HttpError si no es 2xx, o podemos leer error
-                throw error;
-            }
-
+            if (error) throw error;
             if (data?.error) {
                 if (data.error === 'Saldo insuficiente para regenerar la imagen' || data.status === 402) {
                     alert('Saldo insuficiente para regenerar la imagen (Se requieren 15 créditos).');
@@ -78,7 +62,6 @@ export const useGameGen = (
             }
 
             if (data?.imageData) {
-                // Success
                 setQuestions(prev => prev.map((q, i) => i === index ? { ...q, imageData: data.imageData, source: 'ai' } : q));
                 setIsImageReady(true);
                 setIsRegeneratingImage(false);
@@ -89,12 +72,9 @@ export const useGameGen = (
 
         } catch (e: any) {
             console.error("Image generation failed:", e);
-            
-            // Re-throw or show error alert if it's 402
             if (e.message && e.message.includes("402")) {
                 alert('Saldo insuficiente para regenerar la imagen (Se requieren 15 créditos).');
             }
-
             setImgError(true);
             setIsImageReady(true);
             setIsRegeneratingImage(false);
@@ -103,76 +83,95 @@ export const useGameGen = (
     };
 
     const preloadImages = (qs: Question[], startIndex: number) => {
-        // Start from startIndex (avoid re-fetching already preloaded images)
         qs.forEach((q, i) => {
             if (i < startIndex) return;
-            setTimeout(() => generateImage(i, q.visualPrompt, false, -1, qs), (i - startIndex + 1) * 2000); // Pass -1 as currentQIndex to avoid loading state flicker
+            setTimeout(() => generateImage(i, q.visualPrompt, false, -1, qs), (i - startIndex + 1) * 2000);
         });
+    };
+
+    const clearPolling = () => {
+        if (pollingIntervalRef.current) {
+            window.clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+        }
     };
 
     const generateGame = async (config: GameConfig, setNormalizedTopic: (t: string) => void, setNormalizedAudience: (a: string) => void) => {
         if (!config.topic || !config.audience) return;
 
-        // RESET: each new adventure starts fresh — Gemini gets a clean first try
         isUsingPollinationsRef.current = false;
         setIsUsingPollinations(false);
         inProgressImages.current.clear();
+        clearPolling();
 
         setAppState('generating');
-        setLoadingMessage('Generando aventura con IA (esto puede tardar unos segundos)...');
+        setLoadingMessage('Iniciando sistema... preparando créditos y servidor...');
         setIsCreatorMode(true);
-        setProgress(10);
+        setProgress(5);
 
         try {
-            const data = await generateAdventure(config, setProgress);
+            // 1. OBTENER EL TICKET
+            const ticket = await requestAdventureTicket(config);
+            setLoadingMessage('¡Aventura en proceso! El servidor está trabajando en segundo plano...');
+            
+            // Lógica de progreso simulado
+            let progressValue = 10;
+            const progressTimer = setInterval(() => {
+                progressValue += (90 - progressValue) * 0.10;
+                setProgress(progressValue);
+            }, 1000);
 
-            setQuestions(data.questions);
-            setNormalizedTopic(data.correctedTopic || config.topic);
-            setNormalizedAudience(data.correctedAudience || config.audience);
-
-            setProgress(100);
-
-            // Update state with ready images
-            setQuestions([...data.questions]);
-
-            // --- AUTO-SAVE (ALL USERS) ---
-            try {
-                const { data: savedData, error: saveError } = await supabase
+            // 2. POLLING AL SERVIDOR (Fire & Forget Check)
+            pollingIntervalRef.current = window.setInterval(async () => {
+                const { data, error } = await supabase
                     .from('adventures')
-                    .insert({
-                        topic: data.correctedTopic || config.topic,
-                        audience: data.correctedAudience || config.audience,
-                        questions: data.questions,
-                        config: config,
-                        thumbnail_url: data.questions[0]?.imageData || '',
-                        user_id: user?.id || null // Handle anon users
-                    })
-                    .select()
+                    .select('*')
+                    .eq('id', ticket.adventureId)
                     .single();
 
-                if (!saveError && savedData) {
-                    console.log("Auto-saved adventure:", savedData.id);
-                    // Update URL silently
-                    const newUrl = `${window.location.pathname}?id=${savedData.id}`;
-                    window.history.pushState({ path: newUrl }, '', newUrl);
-                } else if (saveError) {
-                    // Log but don't stop flow
-                    console.warn("Auto-save failed (likely permissions):", saveError);
+                if (error) {
+                    console.error("Error al consultar el estado de la aventura:", error);
+                    return; // Retries next interval
                 }
-            } catch (err) {
-                console.error("Auto-save exception:", err);
-            }
 
-            setTimeout(() => {
-                setAppState('start_screen');
-            }, 500);
+                if (data.status === 'completed') {
+                    clearPolling();
+                    clearInterval(progressTimer);
+                    setProgress(100);
+
+                    // Formatear preguntas recibidas (shuffle + fallback map)
+                    const formattedQuestions = formatCompletedQuestions(data.questions);
+                    
+                    setQuestions(formattedQuestions);
+                    setNormalizedTopic(data.topic);
+                    setNormalizedAudience(data.audience);
+
+                    // Actualizar URL al ID real (el auto-save ya se hizo en el backend)
+                    const newUrl = `${window.location.pathname}?id=${data.id}`;
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+
+                    setTimeout(() => setAppState('start_screen'), 500);
+                } else if (data.status === 'failed') {
+                    clearPolling();
+                    clearInterval(progressTimer);
+                    setErrorMsg(`Error en el servidor: ${data.error_message || 'Desconocido'}`);
+                    setAppState('setup');
+                }
+            }, 3000); // Polling cada 3 segundos
+
         } catch (error) {
             console.error(error);
+            clearPolling();
             const msg = error instanceof Error ? error.message : String(error);
             setErrorMsg(`Error: ${msg}`);
             setAppState('setup');
         }
     };
+
+    // Cleanup al desmontar
+    React.useEffect(() => {
+        return () => clearPolling();
+    }, []);
 
     return {
         isImageReady, setIsImageReady,
